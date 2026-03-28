@@ -49,7 +49,7 @@ services:
         arguments:
             $cartContext: '@sylius.context.cart'
             $orderModifier: '@sylius.modifier.order'
-            $orderItemQuantityModifier: '@sylius.order_item_quantity_modifier'
+            $orderItemQuantityModifier: '@sylius.modifier.order_item_quantity'
             $orderItemFactory: '@sylius.factory.order_item'
 
     Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellOfferController:
