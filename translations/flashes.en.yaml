@@ -1,0 +1,8 @@
+upsell:
+    flash:
+        offer_created: 'Upsell offer has been created.'
+        offer_updated: 'Upsell offer has been updated.'
+    offer:
+        create: 'Upsell offer has been created.'
+        update: 'Upsell offer has been updated.'
+        delete: 'Upsell offer has been deleted.'
