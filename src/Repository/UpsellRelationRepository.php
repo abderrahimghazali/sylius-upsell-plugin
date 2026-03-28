@@ -46,19 +46,20 @@ class UpsellRelationRepository extends ServiceEntityRepository
         $conn = $this->getEntityManager()->getConnection();
 
         $sql = <<<'SQL'
-            SELECT oi2.product_id AS product_id, COUNT(*) AS purchase_count
+            SELECT pv2.product_id AS product_id, COUNT(DISTINCT oi1.order_id) AS purchase_count
             FROM sylius_order_item oi1
+            INNER JOIN sylius_product_variant pv1 ON pv1.id = oi1.variant_id
             INNER JOIN sylius_order_item oi2 ON oi1.order_id = oi2.order_id
+            INNER JOIN sylius_product_variant pv2 ON pv2.id = oi2.variant_id
             INNER JOIN sylius_order o ON o.id = oi1.order_id
-            INNER JOIN sylius_product p ON p.id = oi2.product_id
-            INNER JOIN sylius_product_variant pv ON pv.product_id = p.id
-            WHERE oi1.product_id = :productId
-              AND oi2.product_id != :productId
+            INNER JOIN sylius_product p ON p.id = pv2.product_id
+            WHERE pv1.product_id = :productId
+              AND pv2.product_id != :productId
               AND o.state = 'fulfilled'
               AND p.enabled = 1
-              AND pv.on_hand > 0
-            GROUP BY oi2.product_id
-            HAVING COUNT(*) >= :threshold
+              AND (pv2.tracked = 0 OR pv2.on_hand > 0)
+            GROUP BY pv2.product_id
+            HAVING COUNT(DISTINCT oi1.order_id) >= :threshold
             ORDER BY purchase_count DESC
             LIMIT :limit
         SQL;

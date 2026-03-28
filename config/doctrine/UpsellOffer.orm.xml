@@ -50,7 +50,7 @@
 
         <many-to-one field="offerProduct"
                      target-entity="Sylius\Component\Core\Model\ProductInterface">
-            <join-column name="offer_product_id" referenced-column-name="id" nullable="false" on-delete="CASCADE"/>
+            <join-column name="offer_product_id" referenced-column-name="id" nullable="true" on-delete="SET NULL"/>
         </many-to-one>
 
         <many-to-one field="offerVariant"

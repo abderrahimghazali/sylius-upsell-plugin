@@ -52,6 +52,7 @@ services:
             $orderModifier: '@sylius.modifier.order'
             $orderItemQuantityModifier: '@sylius.modifier.order_item_quantity'
             $orderItemFactory: '@sylius.factory.order_item'
+            $csrfTokenManager: '@security.csrf.token_manager'
 
     # Phase 3 — Analytics
     Abderrahim\SyliusUpsellPlugin\Repository\UpsellImpressionRepository: ~

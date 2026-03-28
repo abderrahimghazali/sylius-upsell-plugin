@@ -56,13 +56,6 @@ upsell:
         decline_label: 'Decline button label'
         starts_at: 'Starts at'
         ends_at: 'Ends at'
-    offer:
-        create: 'Upsell offer has been created.'
-        update: 'Upsell offer has been updated.'
-        delete: 'Upsell offer has been deleted.'
-    flash:
-        offer_created: 'Upsell offer has been created.'
-        offer_updated: 'Upsell offer has been updated.'
     shop:
         frequently_bought_together: 'Frequently bought together'
         add_this_item: 'Add this item'

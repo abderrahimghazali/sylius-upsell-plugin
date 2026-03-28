@@ -34,7 +34,7 @@ class UpsellConfigurationProvider
                 $this->entityManager->flush();
             } catch (UniqueConstraintViolationException) {
                 $this->entityManager->clear();
-                $config = $repository->findOneBy([]);
+                $config = $repository->findOneBy([]) ?? new UpsellConfiguration();
             }
         }
 

@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var url = ACCEPT_URL_BASE.replace('/0', '/' + offer.offerId);
         fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-Token': offer.csrfToken || '' }
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-Token': offer.csrfToken || '', 'X-Impression-Id': String(offer.impressionId || 0) }
         })
         .then(function(r) { return r.json(); })
         .then(function(data) {

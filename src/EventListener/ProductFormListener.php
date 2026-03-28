@@ -65,7 +65,8 @@ final class ProductFormListener
 
             $relation->setRelatedProduct($relatedProduct);
             $relation->setPosition($position++);
-            $relation->setDiscount(!empty($data['discount']) ? (int) $data['discount'] : null);
+            $discount = !empty($data['discount']) ? max(0, min(100, (int) $data['discount'])) : null;
+            $relation->setDiscount($discount);
 
             $this->entityManager->persist($relation);
         }

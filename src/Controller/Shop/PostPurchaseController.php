@@ -23,6 +23,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 final class PostPurchaseController extends AbstractController
 {
@@ -37,6 +38,7 @@ final class PostPurchaseController extends AbstractController
         private readonly FactoryInterface $orderItemFactory,
         private readonly EntityManagerInterface $entityManager,
         private readonly UpsellAnalyticsService $analyticsService,
+        private readonly CsrfTokenManagerInterface $csrfTokenManager,
     ) {
     }
 
@@ -84,9 +86,7 @@ final class PostPurchaseController extends AbstractController
             $offer,
         );
 
-        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrfTokenManager */
-        $csrfTokenManager = $this->container->get('security.csrf.token_manager');
-        $csrfToken = $csrfTokenManager->getToken('upsell_accept')->getValue();
+        $csrfToken = $this->csrfTokenManager->getToken('upsell_accept')->getValue();
 
         return new JsonResponse([
             'offerId' => $offer->getId(),
@@ -151,6 +151,12 @@ final class PostPurchaseController extends AbstractController
         $this->orderModifier->addToOrder($cart, $orderItem);
 
         $this->entityManager->flush();
+
+        // Record accepted impression server-side
+        $impressionId = (int) $request->headers->get('X-Impression-Id', '0');
+        if ($impressionId > 0) {
+            $this->analyticsService->recordAccepted($impressionId, $discountedPrice);
+        }
 
         return new JsonResponse(['success' => true, 'revenue' => $discountedPrice]);
     }
