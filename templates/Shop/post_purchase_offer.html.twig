@@ -1,11 +1,14 @@
 {# Injected into checkout complete page — intercepts Place Order with upsell modal #}
 {% set order = hookable_metadata.context.order|default(null) %}
+<!-- UPSELL DEBUG: order={{ order is not null ? 'yes' : 'no' }}, id={{ order.id|default('none') }}, token={{ order.tokenValue|default('EMPTY') }}, items={{ order.items|default([])|length }} -->
 
-{% if order is not null and order.tokenValue|default('') is not empty %}
+{% if order is not null and order.id|default(0) > 0 %}
+    {% set cartToken = order.tokenValue|default('') %}
     <div data-controller="abderrahimghazali--sylius-upsell-plugin--post-purchase"
-         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-offer-url-value="{{ path('abderrahim_sylius_upsell_shop_offer', {'orderToken': order.tokenValue}) }}"
-         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-cart-token-value="{{ order.tokenValue }}"
-         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-add-to-cart-url-value="{{ path('sylius_shop_api_cart_add_item', {'tokenValue': order.tokenValue}) }}">
+         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-offer-url-value="{% if cartToken is not empty %}{{ path('abderrahim_sylius_upsell_shop_offer', {'orderToken': cartToken}) }}{% endif %}"
+         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-cart-token-value="{{ cartToken }}"
+         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-add-to-cart-url-value="{% if cartToken is not empty %}{{ path('sylius_shop_api_cart_add_item', {'tokenValue': cartToken}) }}{% endif %}"
+         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-order-id-value="{{ order.id }}">
 
         <div data-abderrahimghazali--sylius-upsell-plugin--post-purchase-target="modal" class="upsell-hidden"></div>
     </div>
