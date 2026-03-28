@@ -7,7 +7,7 @@ namespace Abderrahim\SyliusUpsellPlugin\Service;
 use Abderrahim\SyliusUpsellPlugin\Entity\UpsellConfiguration;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class UpsellConfigurationProvider
+class UpsellConfigurationProvider
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,

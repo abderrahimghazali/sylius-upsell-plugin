@@ -137,6 +137,8 @@ final class PostPurchaseController extends AbstractController
 
         $variants = $product->getVariants();
 
-        return $variants->isEmpty() ? null : $variants->first();
+        $first = $variants->first();
+
+        return $first instanceof ProductVariantInterface ? $first : null;
     }
 }

@@ -36,7 +36,7 @@ class UpsellRelationRepository extends ServiceEntityRepository
     /**
      * Find products most frequently bought together with the given product.
      *
-     * @return array<array{productId: int, purchaseCount: int}>
+     * @return array<array{product_id: int, purchase_count: int}>
      */
     public function findCoPurchasedProducts(
         ProductInterface $product,
