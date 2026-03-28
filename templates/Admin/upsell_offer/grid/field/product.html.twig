@@ -1,8 +1,5 @@
-{% set fieldName = field|default('triggerProduct') %}
-{% set product = attribute(data, fieldName) %}
-
-{% if product is not null %}
-    {{ product.name|default('—') }}
+{% if data is not null %}
+    {{ data.name|default('—') }}
 {% else %}
     <em class="text-muted">{{ 'upsell.ui.all_products'|trans }}</em>
 {% endif %}
