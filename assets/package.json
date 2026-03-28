@@ -1,0 +1,22 @@
+{
+    "name": "@abderrahimghazali/sylius-upsell-plugin",
+    "license": "MIT",
+    "version": "1.0.0",
+    "symfony": {
+        "controllers": {
+            "fbt": {
+                "main": "controllers/fbt-controller.js",
+                "fetch": "eager",
+                "enabled": true
+            },
+            "post-purchase": {
+                "main": "controllers/post-purchase-controller.js",
+                "fetch": "eager",
+                "enabled": true
+            }
+        }
+    },
+    "peerDependencies": {
+        "@hotwired/stimulus": "^3.0.0"
+    }
+}
