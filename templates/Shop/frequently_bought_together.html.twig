@@ -3,9 +3,9 @@
 
 {% if fbtProducts|length > 0 and config.enabled %}
     <div class="ui segment"
-         data-controller="fbt"
-         data-fbt-add-to-cart-url-value="{{ path('sylius_shop_api_cart_add_item', {'tokenValue': sylius.cart.tokenValue|default('')}) }}"
-         data-fbt-token-value="{{ sylius.cart.tokenValue|default('') }}">
+         data-controller="abderrahimghazali--sylius-upsell-plugin--fbt"
+         data-abderrahimghazali--sylius-upsell-plugin--fbt-add-to-cart-url-value="{{ path('sylius_shop_api_cart_add_item', {'tokenValue': sylius.cart.tokenValue|default('')}) }}"
+         data-abderrahimghazali--sylius-upsell-plugin--fbt-token-value="{{ sylius.cart.tokenValue|default('') }}">
 
         <h3 class="ui header">
             {{ config.sectionTitle|trans }}
@@ -58,8 +58,8 @@
                             <div class="ui checkbox">
                                 <input type="checkbox"
                                        checked
-                                       data-fbt-target="checkbox"
-                                       data-action="change->fbt#toggle"
+                                       data-abderrahimghazali--sylius-upsell-plugin--fbt-target="checkbox"
+                                       data-action="change->abderrahimghazali--sylius-upsell-plugin--fbt#toggle"
                                        data-variant-code="{{ defaultVariant.code|default('') }}"/>
                                 <label>{{ 'upsell.shop.add_this_item'|trans }}</label>
                             </div>
@@ -72,14 +72,14 @@
         <div class="ui hidden divider"></div>
 
         <button class="ui primary button"
-                data-fbt-target="button"
-                data-action="click->fbt#addAllToCart">
+                data-abderrahimghazali--sylius-upsell-plugin--fbt-target="button"
+                data-action="click->abderrahimghazali--sylius-upsell-plugin--fbt#addAllToCart">
             <i class="cart plus icon"></i>
             {{ 'upsell.shop.add_items_to_cart'|trans({'%count%': fbtProducts|length}) }}
-            (<span data-fbt-target="count">{{ fbtProducts|length }}</span>)
+            (<span data-abderrahimghazali--sylius-upsell-plugin--fbt-target="count">{{ fbtProducts|length }}</span>)
         </button>
 
-        <div class="ui positive message hidden" data-fbt-target="confirmation">
+        <div class="ui positive message hidden" data-abderrahimghazali--sylius-upsell-plugin--fbt-target="confirmation">
             <i class="check icon"></i>
             {{ 'upsell.shop.added_to_cart'|trans }}
         </div>

@@ -77,10 +77,10 @@ export default class extends Controller {
                     </div>
 
                     <div class="upsell-offer__actions">
-                        <button class="upsell-offer__cta" data-action="click->post-purchase#accept">
+                        <button class="upsell-offer__cta" data-action="click->abderrahimghazali--sylius-upsell-plugin--post-purchase#accept">
                             ${offer.ctaLabel}
                         </button>
-                        <button class="upsell-offer__decline" data-action="click->post-purchase#decline">
+                        <button class="upsell-offer__decline" data-action="click->abderrahimghazali--sylius-upsell-plugin--post-purchase#decline">
                             ${offer.declineLabel}
                         </button>
                     </div>
