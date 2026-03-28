@@ -1,5 +1,5 @@
 {% set fieldName = field|default('triggerProduct') %}
-{% set product = attribute(data, 'get' ~ fieldName|capitalize)|default(null) %}
+{% set product = attribute(data, fieldName) %}
 
 {% if product is not null %}
     {{ product.name|default('—') }}
