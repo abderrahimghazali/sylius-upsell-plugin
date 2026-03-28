@@ -12,6 +12,7 @@ use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\OrderRepositoryInterface;
+use Sylius\Component\Core\Storage\CartStorageInterface;
 use Sylius\Component\Locale\Context\LocaleContextInterface;
 use Sylius\Component\Promotion\Model\PromotionActionInterface;
 use Sylius\Component\Promotion\Model\PromotionCouponInterface;
@@ -36,6 +37,7 @@ final class PostPurchaseController extends AbstractController
         private readonly FactoryInterface $orderFactory,
         private readonly FactoryInterface $orderItemFactory,
         private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly CartStorageInterface $cartStorage,
     ) {
     }
 
@@ -137,6 +139,9 @@ final class PostPurchaseController extends AbstractController
         $newOrder->setPromotionCoupon($coupon);
 
         $this->entityManager->flush();
+
+        // Set the new order as the active cart in session
+        $this->cartStorage->setForChannel($channel, $newOrder);
 
         $checkoutUrl = $this->urlGenerator->generate('sylius_shop_checkout_start');
 

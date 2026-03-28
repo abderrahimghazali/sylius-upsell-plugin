@@ -53,6 +53,7 @@ services:
             $promotionActionFactory: '@sylius.factory.promotion_action'
             $orderFactory: '@sylius.factory.order'
             $orderItemFactory: '@sylius.factory.order_item'
+            $cartStorage: '@sylius.storage.cart'
 
     Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellOfferController:
         public: true
