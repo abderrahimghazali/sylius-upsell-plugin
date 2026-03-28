@@ -153,18 +153,24 @@ final class PostPurchaseController extends AbstractController
         /** @var OrderInterface $cart */
         $cart = $this->cartContext->getCart();
 
+        // Ensure cart is still in cart state (not already completed)
+        if ($cart->getState() !== OrderInterface::STATE_CART) {
+            return new JsonResponse(['error' => 'Cart is no longer active'], Response::HTTP_CONFLICT);
+        }
+
         /** @var ChannelInterface $channel */
         $channel = $this->channelContext->getChannel();
+
+        $originalPrice = $variant->getChannelPricingForChannel($channel)?->getPrice() ?? 0;
 
         /** @var \Sylius\Component\Core\Model\OrderItemInterface $orderItem */
         $orderItem = $this->orderItemFactory->createNew();
         $orderItem->setVariant($variant);
 
-        $discountedPrice = 0;
+        $revenuePrice = $originalPrice;
         if ($offer->getDiscountPercent() > 0) {
-            $originalPrice = $variant->getChannelPricingForChannel($channel)?->getPrice() ?? 0;
-            $discountedPrice = (int) round($originalPrice * (100 - $offer->getDiscountPercent()) / 100);
-            $orderItem->setUnitPrice($discountedPrice);
+            $revenuePrice = (int) round($originalPrice * (100 - $offer->getDiscountPercent()) / 100);
+            $orderItem->setUnitPrice($revenuePrice);
             $orderItem->setImmutable(true);
         }
 
@@ -173,15 +179,15 @@ final class PostPurchaseController extends AbstractController
 
         $this->entityManager->flush();
 
-        // Record accepted impression server-side
+        // Record accepted impression server-side with actual revenue
         if ($impressionId > 0) {
-            $this->analyticsService->recordAccepted($impressionId, $discountedPrice);
+            $this->analyticsService->recordAccepted($impressionId, $revenuePrice);
         }
 
         // Invalidate CSRF token after use
         $this->csrfTokenManager->removeToken('upsell_accept');
 
-        return new JsonResponse(['success' => true, 'revenue' => $discountedPrice]);
+        return new JsonResponse(['success' => true, 'revenue' => $revenuePrice]);
     }
 
     private function resolveVariant(UpsellOffer $offer): ?ProductVariantInterface

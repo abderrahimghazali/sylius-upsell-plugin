@@ -19,9 +19,12 @@ class UpsellConfigurationProvider
 
     public function getConfiguration(): UpsellConfiguration
     {
-        if (null !== $this->cached) {
+        // Verify cached entity is still managed (not detached by a clear())
+        if (null !== $this->cached && $this->entityManager->contains($this->cached)) {
             return $this->cached;
         }
+
+        $this->cached = null;
 
         $repository = $this->entityManager->getRepository(UpsellConfiguration::class);
         $config = $repository->findOneBy([]);
