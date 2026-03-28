@@ -1,0 +1,24 @@
+upsell:
+    ui:
+        upsell_settings: 'Paramètres Upsell'
+        general: 'Général'
+        display: 'Affichage'
+        configuration_saved: 'La configuration upsell a été enregistrée.'
+        upsell_tab: 'Upsell'
+    form:
+        enabled: 'Activer Fréquemment achetés ensemble'
+        min_co_purchase_threshold: "Seuil minimum d'achats conjoints"
+        max_products_shown: 'Nombre maximum de produits affichés'
+        section_title: 'Titre de la section'
+        show_discount_badge: 'Afficher les badges de réduction'
+        fallback_strategy: 'Stratégie de repli'
+        strategy_algorithmic: 'Algorithmique (détection automatique depuis les commandes)'
+        strategy_manual_only: 'Manuel uniquement'
+        strategy_disabled: 'Désactivé'
+        related_product: 'Produit associé'
+        discount_percentage: 'Réduction (%)'
+    shop:
+        frequently_bought_together: 'Fréquemment achetés ensemble'
+        add_this_item: 'Ajouter cet article'
+        add_items_to_cart: 'Ajouter %count% article(s) au panier'
+        added_to_cart: 'Les articles ont été ajoutés à votre panier !'

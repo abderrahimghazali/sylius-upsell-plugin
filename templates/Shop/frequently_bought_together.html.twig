@@ -1,0 +1,87 @@
+{% set fbtProducts = upsell_frequently_bought_together(product) %}
+{% set config = upsell_configuration() %}
+
+{% if fbtProducts|length > 0 and config.enabled %}
+    <div class="ui segment"
+         data-controller="fbt"
+         data-fbt-add-to-cart-url-value="{{ path('sylius_shop_api_cart_add_item', {'tokenValue': sylius.cart.tokenValue|default('')}) }}"
+         data-fbt-token-value="{{ sylius.cart.tokenValue|default('') }}">
+
+        <h3 class="ui header">
+            {{ config.sectionTitle|trans }}
+        </h3>
+
+        <div class="ui stackable four column grid">
+            {% for item in fbtProducts %}
+                {% set fbtProduct = item.product %}
+                {% set discount = item.discount %}
+                {% set defaultVariant = fbtProduct.variants|first %}
+
+                <div class="column">
+                    <div class="ui fluid card">
+                        {% set image = fbtProduct.imagesByType('main')|first %}
+                        {% if image %}
+                            <div class="image">
+                                <img src="{{ image.path|imagine_filter('sylius_shop_product_thumbnail') }}"
+                                     alt="{{ fbtProduct.name }}" loading="lazy"/>
+
+                                {% if discount and config.showDiscountBadge %}
+                                    <div class="ui red ribbon label">
+                                        -{{ discount }}%
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <div class="content">
+                            <a class="header" href="{{ path('sylius_shop_product_show', {'slug': fbtProduct.slug}) }}">
+                                {{ fbtProduct.name }}
+                            </a>
+
+                            <div class="meta">
+                                {% if defaultVariant %}
+                                    <span class="price">
+                                        {{ defaultVariant.channelPricings.first.price|sylius_format_money(sylius.channel.baseCurrency.code, sylius.localeCode) }}
+                                    </span>
+
+                                    {% if discount %}
+                                        {% set discountedPrice = (defaultVariant.channelPricings.first.price * (100 - discount) / 100)|round %}
+                                        <span class="ui small green text">
+                                            {{ discountedPrice|sylius_format_money(sylius.channel.baseCurrency.code, sylius.localeCode) }}
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="extra content">
+                            <div class="ui checkbox">
+                                <input type="checkbox"
+                                       checked
+                                       data-fbt-target="checkbox"
+                                       data-action="change->fbt#toggle"
+                                       data-variant-code="{{ defaultVariant.code|default('') }}"/>
+                                <label>{{ 'upsell.shop.add_this_item'|trans }}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="ui hidden divider"></div>
+
+        <button class="ui primary button"
+                data-fbt-target="button"
+                data-action="click->fbt#addAllToCart">
+            <i class="cart plus icon"></i>
+            {{ 'upsell.shop.add_items_to_cart'|trans({'%count%': fbtProducts|length}) }}
+            (<span data-fbt-target="count">{{ fbtProducts|length }}</span>)
+        </button>
+
+        <div class="ui positive message hidden" data-fbt-target="confirmation">
+            <i class="check icon"></i>
+            {{ 'upsell.shop.added_to_cart'|trans }}
+        </div>
+    </div>
+{% endif %}

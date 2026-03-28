@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Abderrahim\SyliusUpsellPlugin\Entity\UpsellConfiguration"
+            table="upsell_configuration">
+
+        <id name="id" column="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="enabled" column="enabled" type="boolean" nullable="false">
+            <options>
+                <option name="default">1</option>
+            </options>
+        </field>
+
+        <field name="minCoPurchaseThreshold" column="min_co_purchase_threshold" type="integer" nullable="false">
+            <options>
+                <option name="default">3</option>
+            </options>
+        </field>
+
+        <field name="maxProductsShown" column="max_products_shown" type="integer" nullable="false">
+            <options>
+                <option name="default">4</option>
+            </options>
+        </field>
+
+        <field name="sectionTitle" column="section_title" type="string" length="255" nullable="false">
+            <options>
+                <option name="default">Frequently bought together</option>
+            </options>
+        </field>
+
+        <field name="showDiscountBadge" column="show_discount_badge" type="boolean" nullable="false">
+            <options>
+                <option name="default">1</option>
+            </options>
+        </field>
+
+        <field name="fallbackStrategy" column="fallback_strategy" type="string" length="50" nullable="false">
+            <options>
+                <option name="default">algorithmic</option>
+            </options>
+        </field>
+
+    </entity>
+
+</doctrine-mapping>

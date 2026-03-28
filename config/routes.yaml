@@ -1,0 +1,5 @@
+abderrahim_sylius_upsell_admin_configuration:
+    path: /admin/upsell/configuration
+    defaults:
+        _controller: Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellConfigurationController::editAction
+    methods: [GET, POST]

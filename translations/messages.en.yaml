@@ -1,0 +1,24 @@
+upsell:
+    ui:
+        upsell_settings: 'Upsell Settings'
+        general: 'General'
+        display: 'Display'
+        configuration_saved: 'Upsell configuration has been saved.'
+        upsell_tab: 'Upsell'
+    form:
+        enabled: 'Enable Frequently Bought Together'
+        min_co_purchase_threshold: 'Minimum co-purchase threshold'
+        max_products_shown: 'Maximum products shown'
+        section_title: 'Section title'
+        show_discount_badge: 'Show discount badges'
+        fallback_strategy: 'Fallback strategy'
+        strategy_algorithmic: 'Algorithmic (auto-detect from orders)'
+        strategy_manual_only: 'Manual only'
+        strategy_disabled: 'Disabled'
+        related_product: 'Related product'
+        discount_percentage: 'Discount (%)'
+    shop:
+        frequently_bought_together: 'Frequently bought together'
+        add_this_item: 'Add this item'
+        add_items_to_cart: 'Add %count% item(s) to cart'
+        added_to_cart: 'Items have been added to your cart!'

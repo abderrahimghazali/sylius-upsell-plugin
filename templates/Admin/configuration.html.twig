@@ -1,0 +1,51 @@
+{% extends '@SyliusAdmin/layout.html.twig' %}
+
+{% block title %}{{ 'upsell.ui.upsell_settings'|trans }} {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="ui segment">
+        <h2 class="ui dividing header">
+            <i class="arrow up icon"></i>
+            {{ 'upsell.ui.upsell_settings'|trans }}
+        </h2>
+
+        {{ form_start(form, {'attr': {'class': 'ui form', 'novalidate': 'novalidate'}}) }}
+
+        <div class="ui two column stackable grid">
+            <div class="column">
+                <h4 class="ui header">{{ 'upsell.ui.general'|trans }}</h4>
+                <div class="field">
+                    {{ form_row(form.enabled) }}
+                </div>
+                <div class="field">
+                    {{ form_row(form.sectionTitle) }}
+                </div>
+                <div class="field">
+                    {{ form_row(form.fallbackStrategy) }}
+                </div>
+            </div>
+
+            <div class="column">
+                <h4 class="ui header">{{ 'upsell.ui.display'|trans }}</h4>
+                <div class="field">
+                    {{ form_row(form.maxProductsShown) }}
+                </div>
+                <div class="field">
+                    {{ form_row(form.minCoPurchaseThreshold) }}
+                </div>
+                <div class="field">
+                    {{ form_row(form.showDiscountBadge) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="ui hidden divider"></div>
+
+        <button class="ui primary button" type="submit">
+            <i class="save icon"></i>
+            {{ 'sylius.ui.save'|trans }}
+        </button>
+
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
