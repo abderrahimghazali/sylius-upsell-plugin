@@ -15,6 +15,7 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 final class FrequentlyBoughtTogetherResolver
 {
+    /** @param ProductRepositoryInterface<\Sylius\Component\Core\Model\ProductInterface> $productRepository */
     public function __construct(
         private readonly UpsellRelationRepository $upsellRelationRepository,
         private readonly ProductRepositoryInterface $productRepository,

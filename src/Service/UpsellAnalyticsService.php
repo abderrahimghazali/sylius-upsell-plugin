@@ -80,7 +80,7 @@ class UpsellAnalyticsService
     }
 
     /**
-     * @return array<array{offer_name: string, impressions: int, accepted: int, revenue: int}>
+     * @return list<array<string, mixed>>
      */
     public function getBreakdownByOffer(\DateTimeInterface $from, \DateTimeInterface $to, string $channelCode): array
     {
@@ -88,7 +88,7 @@ class UpsellAnalyticsService
     }
 
     /**
-     * @return array<array{date: string, revenue: int}>
+     * @return list<array<string, mixed>>
      */
     public function getDailyRevenue(\DateTimeInterface $from, \DateTimeInterface $to, string $channelCode): array
     {

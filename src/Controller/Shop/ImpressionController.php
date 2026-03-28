@@ -45,6 +45,7 @@ final class ImpressionController extends AbstractController
         $offer = null;
         $offerId = $data['offerId'] ?? null;
         if (null !== $offerId) {
+            /** @var \Abderrahim\SyliusUpsellPlugin\Entity\UpsellOffer|null $offer */
             $offer = $this->offerRepository->find((int) $offerId);
         }
 
