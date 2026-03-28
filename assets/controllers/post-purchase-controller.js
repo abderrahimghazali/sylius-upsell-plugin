@@ -5,8 +5,7 @@ export default class extends Controller {
 
     static values = {
         offerUrl: String,
-        cartToken: String,
-        addToCartUrl: String,
+        acceptUrl: String,
     };
 
     offer = null;
@@ -102,23 +101,22 @@ export default class extends Controller {
         cta.textContent = '...';
 
         try {
-            const response = await fetch(this.addToCartUrlValue, {
+            // Build accept URL with the actual offer ID
+            const acceptUrl = this.acceptUrlValue.replace('/0', `/${this.offer.offerId}`);
+
+            const response = await fetch(acceptUrl, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/ld+json',
-                    Accept: 'application/ld+json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
                 },
-                body: JSON.stringify({
-                    productVariant: `/api/v2/shop/product-variants/${this.offer.product.variantCode}`,
-                    quantity: 1,
-                }),
             });
 
             if (!response.ok) {
                 console.error('[UpsellPlugin] Failed to add to cart', await response.text());
             }
         } catch (error) {
-            console.error('[UpsellPlugin] Cart API error:', error);
+            console.error('[UpsellPlugin] Accept error:', error);
         }
 
         this._accepted = true;

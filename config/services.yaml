@@ -47,7 +47,10 @@ services:
     Abderrahim\SyliusUpsellPlugin\Controller\Shop\PostPurchaseController:
         public: true
         arguments:
-            $orderRepository: '@sylius.repository.order'
+            $cartContext: '@sylius.context.cart'
+            $orderModifier: '@sylius.order_modifier'
+            $orderItemQuantityModifier: '@sylius.order_item_quantity_modifier'
+            $orderItemFactory: '@sylius.factory.order_item'
 
     Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellOfferController:
         public: true
