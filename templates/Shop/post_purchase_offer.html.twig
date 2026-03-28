@@ -12,7 +12,7 @@
     {% set impressionUrl = path('abderrahim_sylius_upsell_shop_impression') %}
 {% endif %}
 
-<div id="upsell-modal" class="upsell-hidden"></div>
+<div id="upsell-modal" class="upsell-hidden" data-adding-text="{{ 'upsell.shop.adding'|trans }}"></div>
 
 <style>
     .upsell-hidden { display: none !important; }
@@ -131,7 +131,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function acceptOffer() {
         var btn = document.getElementById('upsell-accept');
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Adding...';
+        var addingText = modal.getAttribute('data-adding-text') || 'Adding...';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>' + esc(addingText);
 
         var url = ACCEPT_URL_BASE.replace('/0', '/' + offer.offerId);
         fetch(url, {

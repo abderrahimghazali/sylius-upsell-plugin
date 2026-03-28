@@ -155,14 +155,14 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { callback: function(v) { return '$' + v.toFixed(2); } }
+                        ticks: { callback: function(v) { return v.toLocaleString(undefined, {style:'currency',currency:'{{ currencyCode }}'}); } }
                     }
                 },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
-                            label: function(ctx) { return '$' + ctx.parsed.y.toFixed(2); }
+                            label: function(ctx) { return ctx.parsed.y.toLocaleString(undefined, {style:'currency',currency:'{{ currencyCode }}'}); }
                         }
                     }
                 }

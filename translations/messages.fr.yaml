@@ -6,15 +6,12 @@ upsell:
         offer: 'Offre upsell'
         general: 'Général'
         display: 'Affichage'
-        configuration_saved: 'La configuration upsell a été enregistrée.'
-        upsell_tab: 'Upsell'
-        new_offer: 'Nouvelle offre Upsell'
-        edit_offer: "Modifier l'offre Upsell"
+        new_offer: 'Nouvelle offre upsell'
+        edit_offer: "Modifier l'offre upsell"
         offer_details: "Détails de l'offre"
         display_copy: "Texte d'affichage"
         scheduling: 'Planification'
-        create_offer: 'Créer une offre upsell'
-        manage_upsell_offers: "Gérer les offres upsell post-achat"
+        manage_upsell_offers: 'Gérer les offres upsell'
         trigger_product: 'Produit déclencheur'
         offer_product: 'Produit proposé'
         discount: 'Réduction %'
@@ -61,3 +58,4 @@ upsell:
         add_this_item: 'Ajouter cet article'
         add_items_to_cart: 'Ajouter %count% article(s) au panier'
         added_to_cart: 'Les articles ont été ajoutés à votre panier !'
+        adding: 'Ajout en cours...'

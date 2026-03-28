@@ -7,6 +7,24 @@ on:
         branches: [main]
 
 jobs:
+    php-cs-fixer:
+        name: PHP-CS-Fixer
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.2'
+                  tools: php-cs-fixer
+                  coverage: none
+
+            - name: Run PHP-CS-Fixer
+              run: php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.dist.php
+
     phpstan:
         name: PHPStan (PHP ${{ matrix.php }})
         runs-on: ubuntu-latest

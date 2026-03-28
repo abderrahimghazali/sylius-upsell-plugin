@@ -82,12 +82,10 @@ export default class extends Controller {
     }
 
     showConfirmation() {
-        this.confirmationTarget.classList.remove('hidden');
-        this.confirmationTarget.classList.add('visible');
+        this.confirmationTarget.classList.remove('d-none');
 
         setTimeout(() => {
-            this.confirmationTarget.classList.remove('visible');
-            this.confirmationTarget.classList.add('hidden');
+            this.confirmationTarget.classList.add('d-none');
         }, 3000);
     }
 
