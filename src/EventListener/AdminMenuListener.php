@@ -14,6 +14,24 @@ final class AdminMenuListener
     {
         $menu = $event->getMenu();
 
+        // Upsell Offers under Marketing
+        $marketingMenu = $menu->getChild('marketing');
+
+        if (null !== $marketingMenu) {
+            $marketingMenu
+                ->addChild('upsell_offers', [
+                    'route' => 'upsell_admin_offer_index',
+                    'extras' => ['routes' => [
+                        ['route' => 'upsell_admin_offer_create'],
+                        ['route' => 'upsell_admin_offer_update'],
+                    ]],
+                ])
+                ->setLabel('upsell.ui.upsell_offers')
+                ->setLabelAttribute('icon', 'bullhorn')
+            ;
+        }
+
+        // Upsell Settings under Configuration
         $configurationMenu = $menu->getChild('configuration');
 
         if (null !== $configurationMenu) {

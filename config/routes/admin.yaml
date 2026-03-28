@@ -1,0 +1,32 @@
+abderrahim_sylius_upsell_admin_configuration:
+    path: /upsell/configuration
+    defaults:
+        _controller: Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellConfigurationController::editAction
+    methods: [GET, POST]
+
+upsell_admin_upsell_offer:
+    resource: |
+        alias: upsell.offer
+        section: admin
+        grid: upsell_admin_upsell_offer
+        templates: '@SyliusAdmin/shared/crud'
+        only: ['index', 'delete', 'bulkDelete']
+        vars:
+            all:
+                subheader: upsell.ui.manage_upsell_offers
+            index:
+                icon: bullhorn
+    type: sylius.resource
+    prefix: /upsell
+
+upsell_admin_offer_create:
+    path: /upsell/offers/new
+    methods: [GET, POST]
+    defaults:
+        _controller: Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellOfferController::createAction
+
+upsell_admin_offer_update:
+    path: /upsell/offers/{id}/edit
+    methods: [GET, POST, PUT, PATCH]
+    defaults:
+        _controller: Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellOfferController::updateAction

@@ -1,0 +1,86 @@
+{% extends '@SyliusAdmin/shared/layout/base.html.twig' %}
+
+{% block title %}{{ 'upsell.ui.edit_offer'|trans }} | {{ parent() }}{% endblock %}
+
+{% block body %}
+    {% include '@SyliusAdmin/shared/crud/common/sidebar.html.twig' %}
+
+    <div class="page-wrapper">
+        {% include '@SyliusAdmin/shared/crud/common/navbar.html.twig' %}
+
+        {% include '@SyliusAdmin/shared/crud/common/content/flashes.html.twig' %}
+
+        {% from '@SyliusAdmin/shared/helper/breadcrumbs.html.twig' import breadcrumbs %}
+        <div class="page-header" data-sticky-header>
+            <div class="container-xl">
+                {{ breadcrumbs([
+                    { name: 'sylius.ui.dashboard', url: path('sylius_admin_dashboard'), active: false },
+                    { name: 'upsell.ui.upsell_offers', url: path('upsell_admin_offer_index'), active: false },
+                    { name: offer.name, active: true },
+                ]) }}
+                <div class="row mt-3 row-gap-2">
+                    <div class="col-12 col-md">
+                        <h1 class="page-title">{{ offer.name }}</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-body">
+            <div class="container-xl">
+                {% form_theme form '@SyliusAdmin/shared/form_theme.html.twig' %}
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                <div class="row row-cards">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">{{ 'upsell.ui.offer_details'|trans }}</h3>
+                            </div>
+                            <div class="card-body">
+                                {{ form_row(form.name) }}
+                                {{ form_row(form.enabled) }}
+                                {{ form_row(form.triggerProduct) }}
+                                {{ form_row(form.offerProduct) }}
+                                {{ form_row(form.discountPercent) }}
+                                {{ form_row(form.priority) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">{{ 'upsell.ui.display_copy'|trans }}</h3>
+                            </div>
+                            <div class="card-body">
+                                {{ form_row(form.headline) }}
+                                {{ form_row(form.body) }}
+                                {{ form_row(form.ctaLabel) }}
+                                {{ form_row(form.declineLabel) }}
+                            </div>
+                        </div>
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h3 class="card-title">{{ 'upsell.ui.scheduling'|trans }}</h3>
+                            </div>
+                            <div class="card-body">
+                                {{ form_row(form.startsAt) }}
+                                {{ form_row(form.endsAt) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        {{ 'sylius.ui.save'|trans }}
+                    </button>
+                    <a href="{{ path('upsell_admin_offer_index') }}" class="btn btn-outline-secondary">
+                        {{ 'sylius.ui.cancel'|trans }}
+                    </a>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        {% include '@SyliusAdmin/shared/crud/common/content/footer.html.twig' %}
+    </div>
+{% endblock %}

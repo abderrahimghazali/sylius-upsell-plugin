@@ -1,5 +1,9 @@
-abderrahim_sylius_upsell_admin_configuration:
-    path: /admin/upsell/configuration
-    defaults:
-        _controller: Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellConfigurationController::editAction
-    methods: [GET, POST]
+upsell_admin:
+    resource: 'routes/admin.yaml'
+    prefix: '/%sylius_admin.path_name%'
+
+upsell_shop:
+    resource: 'routes/shop.yaml'
+    prefix: /{_locale}
+    requirements:
+        _locale: ^[a-z]{2}(?:_[A-Z]{2})?$

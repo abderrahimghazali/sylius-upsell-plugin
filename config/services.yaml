@@ -11,6 +11,7 @@ services:
             - '../src/DependencyInjection/'
             - '../src/SyliusUpsellPlugin.php'
 
+    # Phase 1 — Frequently Bought Together
     Abderrahim\SyliusUpsellPlugin\Repository\UpsellRelationRepository: ~
 
     Abderrahim\SyliusUpsellPlugin\Service\UpsellConfigurationProvider: ~
@@ -30,3 +31,24 @@ services:
 
     Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellConfigurationController:
         public: true
+
+    # Phase 2 — Post-Purchase Upsell
+    Abderrahim\SyliusUpsellPlugin\Repository\UpsellOfferRepository: ~
+
+    Abderrahim\SyliusUpsellPlugin\Service\PostPurchaseOfferResolver: ~
+
+    Abderrahim\SyliusUpsellPlugin\Controller\Shop\PostPurchaseController:
+        public: true
+        arguments:
+            $orderRepository: '@sylius.repository.order'
+            $promotionFactory: '@sylius.factory.promotion'
+            $promotionCouponFactory: '@sylius.factory.promotion_coupon'
+            $promotionActionFactory: '@sylius.factory.promotion_action'
+            $orderFactory: '@sylius.factory.order'
+            $orderItemFactory: '@sylius.factory.order_item'
+
+    Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellOfferController:
+        public: true
+        arguments:
+            $offerRepository: '@upsell.repository.offer'
+            $offerFactory: '@upsell.factory.offer'

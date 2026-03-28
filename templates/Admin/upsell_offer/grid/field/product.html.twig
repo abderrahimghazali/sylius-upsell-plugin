@@ -1,0 +1,8 @@
+{% set fieldName = field|default('triggerProduct') %}
+{% set product = attribute(data, 'get' ~ fieldName|capitalize)|default(null) %}
+
+{% if product is not null %}
+    {{ product.name|default('—') }}
+{% else %}
+    <em class="text-muted">{{ 'upsell.ui.all_products'|trans }}</em>
+{% endif %}

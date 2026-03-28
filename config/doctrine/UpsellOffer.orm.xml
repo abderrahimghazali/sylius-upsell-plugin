@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <mapped-superclass name="Abderrahim\SyliusUpsellPlugin\Entity\UpsellOffer"
+                       table="upsell_offer">
+
+        <id name="id" column="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="name" column="name" type="string" length="255" nullable="false"/>
+
+        <field name="enabled" column="enabled" type="boolean" nullable="false">
+            <options>
+                <option name="default">1</option>
+            </options>
+        </field>
+
+        <field name="discountPercent" column="discount_percent" type="integer" nullable="false">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
+
+        <field name="headline" column="headline" type="string" length="255" nullable="true"/>
+
+        <field name="body" column="body" type="text" nullable="true"/>
+
+        <field name="ctaLabel" column="cta_label" type="string" length="100" nullable="true"/>
+
+        <field name="declineLabel" column="decline_label" type="string" length="100" nullable="true"/>
+
+        <field name="priority" column="priority" type="integer" nullable="false">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
+
+        <field name="startsAt" column="starts_at" type="datetime" nullable="true"/>
+
+        <field name="endsAt" column="ends_at" type="datetime" nullable="true"/>
+
+        <many-to-one field="triggerProduct"
+                     target-entity="Sylius\Component\Core\Model\ProductInterface">
+            <join-column name="trigger_product_id" referenced-column-name="id" nullable="true" on-delete="SET NULL"/>
+        </many-to-one>
+
+        <many-to-one field="offerProduct"
+                     target-entity="Sylius\Component\Core\Model\ProductInterface">
+            <join-column name="offer_product_id" referenced-column-name="id" nullable="false" on-delete="CASCADE"/>
+        </many-to-one>
+
+        <many-to-one field="offerVariant"
+                     target-entity="Sylius\Component\Core\Model\ProductVariantInterface">
+            <join-column name="offer_variant_id" referenced-column-name="id" nullable="true" on-delete="SET NULL"/>
+        </many-to-one>
+
+    </mapped-superclass>
+
+</doctrine-mapping>

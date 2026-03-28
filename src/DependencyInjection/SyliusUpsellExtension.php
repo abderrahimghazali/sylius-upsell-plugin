@@ -20,6 +20,14 @@ final class SyliusUpsellExtension extends Extension implements PrependExtensionI
 
     public function prepend(ContainerBuilder $container): void
     {
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
+
+        // Load resource configurations
+        $loader->load('resources/upsell_offer.yaml');
+
+        // Load grid configurations
+        $loader->load('grids/admin/upsell_offer.yaml');
+
         $container->prependExtensionConfig('twig', [
             'paths' => [
                 __DIR__ . '/../../templates' => 'SyliusUpsellPlugin',
@@ -28,10 +36,18 @@ final class SyliusUpsellExtension extends Extension implements PrependExtensionI
 
         $container->prependExtensionConfig('sylius_twig_hooks', [
             'hooks' => [
+                // Phase 1: FBT on product page
                 'sylius_shop.product.show.content.after' => [
                     'upsell_frequently_bought_together' => [
                         'template' => '@SyliusUpsellPlugin/Shop/frequently_bought_together.html.twig',
                         'priority' => 10,
+                    ],
+                ],
+                // Phase 2: Post-purchase on thank-you page
+                'sylius_shop.order.thank_you.content' => [
+                    'upsell_post_purchase_offer' => [
+                        'template' => '@SyliusUpsellPlugin/Shop/post_purchase_offer.html.twig',
+                        'priority' => 50,
                     ],
                 ],
             ],

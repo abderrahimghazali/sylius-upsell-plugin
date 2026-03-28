@@ -1,10 +1,22 @@
 upsell:
     ui:
         upsell_settings: 'Paramètres Upsell'
+        upsell_offers: 'Offres Upsell'
         general: 'Général'
         display: 'Affichage'
         configuration_saved: 'La configuration upsell a été enregistrée.'
         upsell_tab: 'Upsell'
+        new_offer: 'Nouvelle offre Upsell'
+        edit_offer: "Modifier l'offre Upsell"
+        offer_details: "Détails de l'offre"
+        display_copy: "Texte d'affichage"
+        scheduling: 'Planification'
+        create_offer: 'Créer une offre upsell'
+        manage_upsell_offers: "Gérer les offres upsell post-achat"
+        trigger_product: 'Produit déclencheur'
+        offer_product: 'Produit proposé'
+        discount: 'Réduction %'
+        all_products: 'Tous les produits (global)'
     form:
         enabled: 'Activer Fréquemment achetés ensemble'
         min_co_purchase_threshold: "Seuil minimum d'achats conjoints"
@@ -17,6 +29,18 @@ upsell:
         strategy_disabled: 'Désactivé'
         related_product: 'Produit associé'
         discount_percentage: 'Réduction (%)'
+        trigger_product: 'Produit déclencheur (laisser vide pour tous les produits)'
+        offer_product: 'Produit proposé'
+        discount_percent: 'Pourcentage de réduction'
+        headline: 'Titre'
+        body: 'Texte du corps'
+        cta_label: "Libellé du bouton d'action"
+        decline_label: 'Libellé du bouton de refus'
+        starts_at: 'Commence le'
+        ends_at: 'Se termine le'
+    flash:
+        offer_created: "L'offre upsell a été créée."
+        offer_updated: "L'offre upsell a été mise à jour."
     shop:
         frequently_bought_together: 'Fréquemment achetés ensemble'
         add_this_item: 'Ajouter cet article'

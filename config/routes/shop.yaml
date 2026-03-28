@@ -1,0 +1,11 @@
+abderrahim_sylius_upsell_shop_offer:
+    path: /upsell/offer/{orderToken}
+    defaults:
+        _controller: Abderrahim\SyliusUpsellPlugin\Controller\Shop\PostPurchaseController::offerAction
+    methods: [GET]
+
+abderrahim_sylius_upsell_shop_accept:
+    path: /upsell/accept/{orderToken}
+    defaults:
+        _controller: Abderrahim\SyliusUpsellPlugin\Controller\Shop\PostPurchaseController::acceptAction
+    methods: [POST]

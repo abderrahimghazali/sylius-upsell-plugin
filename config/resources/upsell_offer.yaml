@@ -1,0 +1,9 @@
+sylius_resource:
+    resources:
+        upsell.offer:
+            driver: doctrine/orm
+            classes:
+                model: Abderrahim\SyliusUpsellPlugin\Entity\UpsellOffer
+                interface: Abderrahim\SyliusUpsellPlugin\Entity\UpsellOfferInterface
+                form: Abderrahim\SyliusUpsellPlugin\Form\Type\UpsellOfferType
+                repository: Abderrahim\SyliusUpsellPlugin\Repository\UpsellOfferRepository
