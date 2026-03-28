@@ -126,7 +126,7 @@ export default class extends Controller {
 
         this._accepted = true;
         this.hideModal();
-        this.submitForm();
+        window.location.href = '/' + document.documentElement.lang + '/cart/';
     }
 
     decline(event) {
