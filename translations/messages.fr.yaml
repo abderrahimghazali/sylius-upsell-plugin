@@ -40,6 +40,10 @@ upsell:
         decline_label: 'Libellé du bouton de refus'
         starts_at: 'Commence le'
         ends_at: 'Se termine le'
+    offer:
+        create: "L'offre upsell a été créée."
+        update: "L'offre upsell a été mise à jour."
+        delete: "L'offre upsell a été supprimée."
     flash:
         offer_created: "L'offre upsell a été créée."
         offer_updated: "L'offre upsell a été mise à jour."
