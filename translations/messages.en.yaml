@@ -2,6 +2,8 @@ upsell:
     ui:
         upsell_settings: 'Upsell Settings'
         upsell_offers: 'Upsell Offers'
+        offers: 'Upsell Offers'
+        offer: 'Upsell Offer'
         general: 'General'
         display: 'Display'
         configuration_saved: 'Upsell configuration has been saved.'
