@@ -5,19 +5,10 @@ declare(strict_types=1);
 namespace Abderrahim\SyliusUpsellPlugin\Repository;
 
 use Abderrahim\SyliusUpsellPlugin\Entity\UpsellOffer;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 
-/**
- * @extends ServiceEntityRepository<UpsellOffer>
- */
-class UpsellOfferRepository extends ServiceEntityRepository
+class UpsellOfferRepository extends EntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, UpsellOffer::class);
-    }
-
     /**
      * Find enabled offers matching any of the given product IDs or catch-all (null trigger).
      *
