@@ -14,8 +14,7 @@ class UpsellAnalyticsService
     public function __construct(
         private readonly UpsellImpressionRepository $impressionRepository,
         private readonly EntityManagerInterface $entityManager,
-    ) {
-    }
+    ) {}
 
     public function recordImpression(
         string $type,

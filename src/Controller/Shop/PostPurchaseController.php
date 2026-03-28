@@ -39,8 +39,7 @@ final class PostPurchaseController extends AbstractController
         private readonly UpsellAnalyticsService $analyticsService,
         private readonly CsrfTokenManagerInterface $csrfTokenManager,
         private readonly RequestStack $requestStack,
-    ) {
-    }
+    ) {}
 
     public function offerAction(int $orderId): JsonResponse
     {

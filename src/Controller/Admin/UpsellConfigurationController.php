@@ -16,8 +16,7 @@ final class UpsellConfigurationController extends AbstractController
     public function __construct(
         private readonly UpsellConfigurationProvider $configurationProvider,
         private readonly EntityManagerInterface $entityManager,
-    ) {
-    }
+    ) {}
 
     public function editAction(Request $request): Response
     {

@@ -24,8 +24,7 @@ final class ProductFormListener
         private readonly UpsellRelationRepository $upsellRelationRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly RequestStack $requestStack,
-    ) {
-    }
+    ) {}
 
     public function onProductPreUpdate(ResourceControllerEvent $event): void
     {

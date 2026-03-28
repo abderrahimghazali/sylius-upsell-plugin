@@ -15,8 +15,7 @@ final class UpsellAnalyticsController extends AbstractController
     public function __construct(
         private readonly UpsellAnalyticsService $analyticsService,
         private readonly ChannelContextInterface $channelContext,
-    ) {
-    }
+    ) {}
 
     public function indexAction(Request $request): Response
     {

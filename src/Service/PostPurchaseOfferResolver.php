@@ -13,8 +13,7 @@ final class PostPurchaseOfferResolver
 {
     public function __construct(
         private readonly UpsellOfferRepository $offerRepository,
-    ) {
-    }
+    ) {}
 
     public function resolve(OrderInterface $order): ?UpsellOffer
     {

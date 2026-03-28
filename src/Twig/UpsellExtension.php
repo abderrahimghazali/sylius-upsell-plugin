@@ -16,8 +16,7 @@ final class UpsellExtension extends AbstractExtension
     public function __construct(
         private readonly FrequentlyBoughtTogetherResolver $resolver,
         private readonly UpsellConfigurationProvider $configurationProvider,
-    ) {
-    }
+    ) {}
 
     public function getFunctions(): array
     {

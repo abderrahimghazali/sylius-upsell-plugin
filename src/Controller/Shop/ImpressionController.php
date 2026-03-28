@@ -21,8 +21,7 @@ final class ImpressionController extends AbstractController
         private readonly UpsellAnalyticsService $analyticsService,
         private readonly UpsellOfferRepository $offerRepository,
         private readonly ChannelContextInterface $channelContext,
-    ) {
-    }
+    ) {}
 
     public function recordAction(Request $request): JsonResponse
     {

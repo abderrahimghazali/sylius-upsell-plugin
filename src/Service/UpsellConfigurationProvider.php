@@ -14,8 +14,7 @@ class UpsellConfigurationProvider
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-    ) {
-    }
+    ) {}
 
     public function getConfiguration(): UpsellConfiguration
     {

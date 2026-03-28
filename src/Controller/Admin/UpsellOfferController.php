@@ -20,8 +20,7 @@ final class UpsellOfferController extends AbstractController
         private readonly RepositoryInterface $offerRepository,
         private readonly FactoryInterface $offerFactory,
         private readonly EntityManagerInterface $entityManager,
-    ) {
-    }
+    ) {}
 
     public function createAction(Request $request): Response
     {

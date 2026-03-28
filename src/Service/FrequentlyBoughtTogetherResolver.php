@@ -22,8 +22,7 @@ final class FrequentlyBoughtTogetherResolver
         private readonly UpsellConfigurationProvider $configurationProvider,
         private readonly ChannelContextInterface $channelContext,
         private readonly CacheInterface $cache,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<array{product: ProductInterface, discount: int|null}>
