@@ -10,6 +10,7 @@ services:
             - '../src/Entity/'
             - '../src/DependencyInjection/'
             - '../src/SyliusUpsellPlugin.php'
+            - '../src/Form/Type/UpsellOfferType.php'
 
     # Phase 1 — Frequently Bought Together
     Abderrahim\SyliusUpsellPlugin\Repository\UpsellRelationRepository: ~
