@@ -1,86 +1,90 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ['container'];
+    static targets = ['modal'];
 
     static values = {
         offerUrl: String,
-        acceptUrl: String,
-        orderToken: String,
+        cartToken: String,
+        addToCartUrl: String,
     };
 
-    connect() {
-        const dismissed = localStorage.getItem(
-            `upsell_dismissed_${this.orderTokenValue}`,
-        );
-        if (dismissed) {
-            return;
-        }
+    offer = null;
+    placeOrderForm = null;
 
-        this.fetchOffer();
+    connect() {
+        this.placeOrderForm = document.querySelector(
+            'form[name="sylius_checkout_complete"]',
+        );
+        if (!this.placeOrderForm) return;
+
+        this.placeOrderForm.addEventListener('submit', (e) => {
+            if (!this.offer || this._dismissed || this._accepted) return;
+            e.preventDefault();
+            this.fetchOffer();
+        });
     }
 
     async fetchOffer() {
         try {
             const response = await fetch(this.offerUrlValue);
-
             if (!response.ok || response.status === 204) {
+                this.submitForm();
                 return;
             }
-
-            const offer = await response.json();
-            this.renderOffer(offer);
+            this.offer = await response.json();
+            this.showModal();
         } catch (error) {
             console.error('[UpsellPlugin] Failed to fetch offer:', error);
+            this.submitForm();
         }
     }
 
-    renderOffer(offer) {
-        const container = this.containerTarget;
+    showModal() {
+        const offer = this.offer;
+        const modal = this.modalTarget;
 
-        const originalPriceFormatted = this.formatPrice(
+        const originalPrice = this.formatPrice(
             offer.product.originalPrice,
             offer.product.currency,
         );
-        const discountedPriceFormatted = this.formatPrice(
+        const discountedPrice = this.formatPrice(
             offer.product.discountedPrice,
             offer.product.currency,
         );
 
         const imageHtml = offer.product.image
-            ? `<img src="/media/image/${offer.product.image}" alt="${offer.product.name}" class="upsell-offer__image" loading="lazy" />`
+            ? `<img src="/media/image/${offer.product.image}" alt="${offer.product.name}" style="width:120px;border-radius:8px" loading="lazy" />`
             : '';
 
         const discountBadge =
             offer.discountPercent > 0
-                ? `<span class="upsell-offer__badge">-${offer.discountPercent}%</span>`
+                ? `<span class="upsell-modal__badge">-${offer.discountPercent}%</span>`
                 : '';
 
-        container.innerHTML = `
-            <div class="upsell-offer" data-offer-id="${offer.offerId}">
-                <div class="upsell-offer__content">
-                    <h3 class="upsell-offer__headline">${offer.headline}</h3>
-                    ${offer.body ? `<p class="upsell-offer__body">${offer.body}</p>` : ''}
-
-                    <div class="upsell-offer__product">
-                        <div class="upsell-offer__product-image">
+        modal.innerHTML = `
+            <div class="upsell-modal__overlay">
+                <div class="upsell-modal__dialog">
+                    <h3 class="upsell-modal__headline">${offer.headline}</h3>
+                    ${offer.body ? `<p class="upsell-modal__body">${offer.body}</p>` : ''}
+                    <div class="upsell-modal__product">
+                        <div class="upsell-modal__product-image">
                             ${imageHtml}
                             ${discountBadge}
                         </div>
-                        <div class="upsell-offer__product-info">
-                            <h4 class="upsell-offer__product-name">${offer.product.name}</h4>
-                            <div class="upsell-offer__pricing">
-                                ${offer.discountPercent > 0 ? `<span class="upsell-offer__price--original">${originalPriceFormatted}</span>` : ''}
-                                <span class="upsell-offer__price--current">${discountedPriceFormatted}</span>
+                        <div class="upsell-modal__product-info">
+                            <h4 class="upsell-modal__product-name">${offer.product.name}</h4>
+                            <div class="upsell-modal__pricing">
+                                ${offer.discountPercent > 0 ? `<span class="upsell-modal__price--original">${originalPrice}</span>` : ''}
+                                <span class="upsell-modal__price--current">${discountedPrice}</span>
                             </div>
                         </div>
                     </div>
-
-                    <div class="upsell-offer__actions">
-                        <button class="upsell-offer__cta" data-action="click->abderrahimghazali--sylius-upsell-plugin--post-purchase#accept">
+                    <div class="upsell-modal__actions">
+                        <button type="button" class="upsell-modal__cta" data-action="click->abderrahimghazali--sylius-upsell-plugin--post-purchase#accept">
                             ${offer.ctaLabel}
                         </button>
-                        <button class="upsell-offer__decline" data-action="click->abderrahimghazali--sylius-upsell-plugin--post-purchase#decline">
+                        <button type="button" class="upsell-modal__decline" data-action="click->abderrahimghazali--sylius-upsell-plugin--post-purchase#decline">
                             ${offer.declineLabel}
                         </button>
                     </div>
@@ -88,61 +92,62 @@ export default class extends Controller {
             </div>
         `;
 
-        container.classList.remove('hidden');
+        modal.classList.remove('upsell-hidden');
     }
 
     async accept(event) {
         event.preventDefault();
-
-        const ctaButton = event.currentTarget;
-        ctaButton.disabled = true;
-        ctaButton.textContent = '...';
+        const cta = event.currentTarget;
+        cta.disabled = true;
+        cta.textContent = '...';
 
         try {
-            const response = await fetch(this.acceptUrlValue, {
+            const response = await fetch(this.addToCartUrlValue, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/ld+json',
+                    Accept: 'application/ld+json',
                 },
+                body: JSON.stringify({
+                    productVariant: `/api/v2/shop/product-variants/${this.offer.product.variantCode}`,
+                    quantity: 1,
+                }),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to accept offer');
+                console.error('[UpsellPlugin] Failed to add to cart', await response.text());
             }
-
-            const data = await response.json();
-
-            this.dismiss();
-            window.location.href = data.checkoutUrl;
         } catch (error) {
-            console.error('[UpsellPlugin] Failed to accept offer:', error);
-            ctaButton.disabled = false;
-            ctaButton.textContent = 'Try again';
+            console.error('[UpsellPlugin] Cart API error:', error);
         }
+
+        this._accepted = true;
+        this.hideModal();
+        this.submitForm();
     }
 
     decline(event) {
         event.preventDefault();
-        this.dismiss();
-        this.containerTarget.classList.add('hidden');
+        this._dismissed = true;
+        this.hideModal();
+        this.submitForm();
     }
 
-    dismiss() {
-        localStorage.setItem(
-            `upsell_dismissed_${this.orderTokenValue}`,
-            '1',
-        );
+    hideModal() {
+        this.modalTarget.classList.add('upsell-hidden');
+    }
+
+    submitForm() {
+        this.placeOrderForm.submit();
     }
 
     formatPrice(amountInCents, currencyCode) {
         const amount = amountInCents / 100;
-
         try {
-            return new Intl.NumberFormat(document.documentElement.lang || 'en', {
-                style: 'currency',
-                currency: currencyCode || 'USD',
-            }).format(amount);
+            return new Intl.NumberFormat(
+                document.documentElement.lang || 'en',
+                { style: 'currency', currency: currencyCode || 'USD' },
+            ).format(amount);
         } catch {
             return `${currencyCode} ${amount.toFixed(2)}`;
         }

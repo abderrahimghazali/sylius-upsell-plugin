@@ -48,12 +48,6 @@ services:
         public: true
         arguments:
             $orderRepository: '@sylius.repository.order'
-            $promotionFactory: '@sylius.factory.promotion'
-            $promotionCouponFactory: '@sylius.factory.promotion_coupon'
-            $promotionActionFactory: '@sylius.factory.promotion_action'
-            $orderFactory: '@sylius.factory.order'
-            $orderItemFactory: '@sylius.factory.order_item'
-            $cartStorage: '@Sylius\Component\Core\Storage\CartStorageInterface'
 
     Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellOfferController:
         public: true

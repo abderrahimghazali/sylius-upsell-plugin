@@ -1,124 +1,69 @@
-{# Injected into the thank-you page via Twig hook #}
-{% set orderToken = hookable_metadata.context.order.tokenValue|default('') %}
+{# Injected into checkout complete page — intercepts Place Order with upsell modal #}
+{% set order = hookable_metadata.context.order|default(null) %}
 
-{% if orderToken %}
+{% if order is not null and order.tokenValue is defined %}
     <div data-controller="abderrahimghazali--sylius-upsell-plugin--post-purchase"
-         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-offer-url-value="{{ path('abderrahim_sylius_upsell_shop_offer', {'orderToken': orderToken}) }}"
-         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-accept-url-value="{{ path('abderrahim_sylius_upsell_shop_accept', {'orderToken': orderToken}) }}"
-         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-order-token-value="{{ orderToken }}">
+         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-offer-url-value="{{ path('abderrahim_sylius_upsell_shop_offer', {'orderToken': order.tokenValue}) }}"
+         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-cart-token-value="{{ order.tokenValue }}"
+         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-add-to-cart-url-value="{{ path('sylius_shop_api_cart_add_item', {'tokenValue': order.tokenValue}) }}">
 
-        <div data-abderrahimghazali--sylius-upsell-plugin--post-purchase-target="container" class="hidden"></div>
+        <div data-abderrahimghazali--sylius-upsell-plugin--post-purchase-target="modal" class="upsell-hidden"></div>
     </div>
 
     <style>
-        .upsell-offer {
-            margin: 2rem 0;
-            border: 2px solid #e8e8e8;
-            border-radius: 12px;
-            overflow: hidden;
-            background: linear-gradient(135deg, #fefefe 0%, #f8f9ff 100%);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        .upsell-hidden { display: none !important; }
+        .upsell-modal__overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex; align-items: center; justify-content: center;
         }
-        .upsell-offer__content {
-            padding: 2rem;
-            text-align: center;
+        .upsell-modal__dialog {
+            background: #fff; border-radius: 16px; padding: 2rem;
+            max-width: 480px; width: 90%; text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            animation: upsell-slide-up 0.3s ease-out;
         }
-        .upsell-offer__headline {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: #1a1a2e;
+        @keyframes upsell-slide-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .upsell-offer__body {
-            color: #555;
-            margin-bottom: 1.5rem;
+        .upsell-modal__headline {
+            font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; color: #1a1a2e;
         }
-        .upsell-offer__product {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
+        .upsell-modal__body { color: #555; margin-bottom: 1.5rem; }
+        .upsell-modal__product {
+            display: flex; align-items: center; gap: 1rem;
+            justify-content: center; margin-bottom: 1.5rem; flex-wrap: wrap;
         }
-        .upsell-offer__product-image {
-            position: relative;
-            width: 150px;
-            flex-shrink: 0;
+        .upsell-modal__product-image { position: relative; }
+        .upsell-modal__badge {
+            position: absolute; top: -6px; right: -6px;
+            background: #e74c3c; color: #fff; padding: 3px 8px;
+            border-radius: 20px; font-size: 0.8rem; font-weight: 600;
         }
-        .upsell-offer__product-image img {
-            width: 100%;
-            border-radius: 8px;
+        .upsell-modal__product-name { font-size: 1.05rem; margin-bottom: 0.25rem; }
+        .upsell-modal__pricing { display: flex; gap: 0.5rem; align-items: baseline; }
+        .upsell-modal__price--original {
+            text-decoration: line-through; color: #999; font-size: 0.9rem;
         }
-        .upsell-offer__badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: #e74c3c;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
+        .upsell-modal__price--current {
+            font-size: 1.2rem; font-weight: 700; color: #27ae60;
         }
-        .upsell-offer__product-name {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
+        .upsell-modal__actions {
+            display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;
         }
-        .upsell-offer__pricing {
-            display: flex;
-            gap: 0.75rem;
-            align-items: baseline;
+        .upsell-modal__cta {
+            background: #206bc4; color: #fff; border: none;
+            padding: 10px 24px; border-radius: 8px; font-size: 1rem;
+            font-weight: 600; cursor: pointer; transition: background 0.2s;
         }
-        .upsell-offer__price--original {
-            text-decoration: line-through;
-            color: #999;
-            font-size: 0.95rem;
+        .upsell-modal__cta:hover { background: #1a56a0; }
+        .upsell-modal__cta:disabled { opacity: 0.6; cursor: wait; }
+        .upsell-modal__decline {
+            background: transparent; border: 1px solid #ddd;
+            padding: 10px 24px; border-radius: 8px; font-size: 1rem;
+            cursor: pointer; color: #666; transition: border-color 0.2s;
         }
-        .upsell-offer__price--current {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #27ae60;
-        }
-        .upsell-offer__actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .upsell-offer__cta {
-            background: #206bc4;
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .upsell-offer__cta:hover {
-            background: #1a56a0;
-        }
-        .upsell-offer__cta:disabled {
-            opacity: 0.6;
-            cursor: wait;
-        }
-        .upsell-offer__decline {
-            background: transparent;
-            border: 1px solid #ddd;
-            padding: 12px 28px;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            color: #666;
-            transition: border-color 0.2s;
-        }
-        .upsell-offer__decline:hover {
-            border-color: #999;
-        }
-        .hidden {
-            display: none !important;
-        }
+        .upsell-modal__decline:hover { border-color: #999; }
     </style>
 {% endif %}

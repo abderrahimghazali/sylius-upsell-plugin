@@ -43,8 +43,8 @@ final class SyliusUpsellExtension extends Extension implements PrependExtensionI
                         'priority' => 10,
                     ],
                 ],
-                // Phase 2: Post-purchase on thank-you page
-                'sylius_shop.order.thank_you.content' => [
+                // Phase 2: Upsell modal on checkout complete page
+                'sylius_shop.checkout.complete.content' => [
                     'upsell_post_purchase_offer' => [
                         'template' => '@SyliusUpsellPlugin/Shop/post_purchase_offer.html.twig',
                         'priority' => 50,
