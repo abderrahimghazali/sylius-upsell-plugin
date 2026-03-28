@@ -71,7 +71,7 @@
 </style>
 
 <script>
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
     var OFFER_URL = '{{ offerUrl|default('')|e('js') }}';
     var ACCEPT_URL_BASE = '{{ acceptUrlBase|default('')|e('js') }}';
 
@@ -170,5 +170,5 @@
             })
             .catch(function() { form.submit(); });
     });
-})();
+});
 </script>
