@@ -48,7 +48,7 @@ services:
         public: true
         arguments:
             $cartContext: '@sylius.context.cart'
-            $orderModifier: '@sylius.order_modifier'
+            $orderModifier: '@sylius.modifier.order'
             $orderItemQuantityModifier: '@sylius.order_item_quantity_modifier'
             $orderItemFactory: '@sylius.factory.order_item'
 
