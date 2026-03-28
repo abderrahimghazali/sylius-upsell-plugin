@@ -12,6 +12,7 @@ use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\Order\Context\CartContextInterface;
 use Sylius\Component\Order\Modifier\OrderItemQuantityModifierInterface;
 use Sylius\Component\Order\Modifier\OrderModifierInterface;
@@ -25,6 +26,7 @@ final class PostPurchaseController extends AbstractController
     public function __construct(
         private readonly PostPurchaseOfferResolver $offerResolver,
         private readonly UpsellOfferRepository $offerRepository,
+        private readonly OrderRepositoryInterface $orderRepository,
         private readonly ChannelContextInterface $channelContext,
         private readonly CartContextInterface $cartContext,
         private readonly OrderModifierInterface $orderModifier,
@@ -37,7 +39,7 @@ final class PostPurchaseController extends AbstractController
     public function offerAction(int $orderId): JsonResponse
     {
         /** @var OrderInterface|null $order */
-        $order = $this->entityManager->getRepository(\Sylius\Component\Core\Model\Order::class)->find($orderId);
+        $order = $this->orderRepository->find($orderId);
 
         if (null === $order) {
             return new JsonResponse(null, Response::HTTP_NOT_FOUND);
