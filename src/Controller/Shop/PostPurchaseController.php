@@ -113,7 +113,7 @@ final class PostPurchaseController extends AbstractController
 
         // Create promotion with single-use coupon
         $couponCode = $this->generateCouponCode($offer);
-        $this->createUpsellPromotion($offer, $couponCode, $channel);
+        $coupon = $this->createUpsellPromotion($offer, $couponCode, $channel);
 
         // Create new cart order
         /** @var OrderInterface $newOrder */
@@ -134,10 +134,7 @@ final class PostPurchaseController extends AbstractController
         $newOrder->addItem($orderItem);
 
         // Apply coupon
-        $newOrder->setPromotionCoupon(
-            $this->entityManager->getRepository(\Sylius\Component\Core\Model\PromotionCoupon::class)
-                ->findOneBy(['code' => $couponCode])
-        );
+        $newOrder->setPromotionCoupon($coupon);
 
         $this->entityManager->flush();
 
@@ -171,7 +168,7 @@ final class PostPurchaseController extends AbstractController
         return sprintf('UPSELL-%d-%s', $offer->getId(), strtoupper(bin2hex(random_bytes(3))));
     }
 
-    private function createUpsellPromotion(UpsellOffer $offer, string $couponCode, ChannelInterface $channel): void
+    private function createUpsellPromotion(UpsellOffer $offer, string $couponCode, ChannelInterface $channel): PromotionCouponInterface
     {
         $promotionCode = 'upsell_offer_' . $offer->getId() . '_' . strtolower(bin2hex(random_bytes(3)));
 
@@ -203,5 +200,7 @@ final class PostPurchaseController extends AbstractController
 
         $this->entityManager->persist($coupon);
         $this->entityManager->flush();
+
+        return $coupon;
     }
 }
