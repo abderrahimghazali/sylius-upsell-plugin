@@ -21,7 +21,7 @@
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"/></a>
     <a href="https://packagist.org/packages/abderrahimghazali/sylius-upsell-plugin"><img src="https://img.shields.io/badge/sylius-2.x-green.svg" alt="Sylius 2.x"/></a>
     <a href="https://packagist.org/packages/abderrahimghazali/sylius-upsell-plugin"><img src="https://img.shields.io/badge/symfony-7.x-black.svg" alt="Symfony 7.x"/></a>
-    <img src="https://img.shields.io/badge/PHPStan-level%205-brightgreen.svg" alt="PHPStan Level 5"/>
+    <img src="https://img.shields.io/badge/PHPStan-level%207-brightgreen.svg" alt="PHPStan Level 7"/>
 </p>
 
 ---
