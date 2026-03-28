@@ -40,7 +40,9 @@ final class UpsellAnalyticsController extends AbstractController
         $breakdown = $this->analyticsService->getBreakdownByOffer($from, $to, $channelCode);
         $dailyRevenue = $this->analyticsService->getDailyRevenue($from, $to, $channelCode);
 
-        $currencyCode = $this->channelContext->getChannel()->getBaseCurrency()?->getCode() ?? 'USD';
+        /** @var \Sylius\Component\Core\Model\ChannelInterface $channel */
+        $channel = $this->channelContext->getChannel();
+        $currencyCode = $channel->getBaseCurrency()?->getCode() ?? 'USD';
 
         return $this->render('@SyliusUpsellPlugin/Admin/analytics.html.twig', [
             'summary' => $summary,
