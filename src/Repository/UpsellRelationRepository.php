@@ -61,13 +61,14 @@ class UpsellRelationRepository extends ServiceEntityRepository
             GROUP BY pv2.product_id
             HAVING COUNT(DISTINCT oi1.order_id) >= :threshold
             ORDER BY purchase_count DESC
-            LIMIT :limit
+            LIMIT %d
         SQL;
+
+        $sql = sprintf($sql, $limit);
 
         $result = $conn->executeQuery($sql, [
             'productId' => $product->getId(),
             'threshold' => $minThreshold,
-            'limit' => $limit,
         ]);
 
         return $result->fetchAllAssociative();

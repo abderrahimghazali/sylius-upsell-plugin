@@ -14,7 +14,6 @@ use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
-use Sylius\Component\Core\Repository\OrderRepositoryInterface;
 use Sylius\Component\Order\Context\CartContextInterface;
 use Sylius\Component\Order\Modifier\OrderItemQuantityModifierInterface;
 use Sylius\Component\Order\Modifier\OrderModifierInterface;
@@ -22,6 +21,7 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
@@ -30,7 +30,6 @@ final class PostPurchaseController extends AbstractController
     public function __construct(
         private readonly PostPurchaseOfferResolver $offerResolver,
         private readonly UpsellOfferRepository $offerRepository,
-        private readonly OrderRepositoryInterface $orderRepository,
         private readonly ChannelContextInterface $channelContext,
         private readonly CartContextInterface $cartContext,
         private readonly OrderModifierInterface $orderModifier,
@@ -39,23 +38,27 @@ final class PostPurchaseController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly UpsellAnalyticsService $analyticsService,
         private readonly CsrfTokenManagerInterface $csrfTokenManager,
+        private readonly RequestStack $requestStack,
     ) {
     }
 
     public function offerAction(int $orderId): JsonResponse
     {
-        /** @var OrderInterface|null $order */
-        $order = $this->orderRepository->find($orderId);
-
-        if (null === $order) {
-            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
-        }
-
-        $customer = $order->getCustomer();
-        $user = $this->getUser();
-        if (null !== $customer && null !== $user && method_exists($user, 'getCustomer') && $customer !== $user->getCustomer()) {
+        // The offer endpoint is called from the checkout complete page.
+        // The order ID comes from the Twig template (server-rendered for the current session's cart).
+        // Validate that this order ID matches the current session's cart to prevent IDOR.
+        try {
+            $cart = $this->cartContext->getCart();
+        } catch (\Exception) {
             return new JsonResponse(null, Response::HTTP_FORBIDDEN);
         }
+
+        if (null === $cart->getId() || $cart->getId() !== $orderId) {
+            return new JsonResponse(null, Response::HTTP_FORBIDDEN);
+        }
+
+        /** @var OrderInterface $order */
+        $order = $cart;
 
         $offer = $this->offerResolver->resolve($order);
 
@@ -80,11 +83,16 @@ final class PostPurchaseController extends AbstractController
         // Record impression
         $impression = $this->analyticsService->recordImpression(
             UpsellImpression::TYPE_POST_PURCHASE,
-            $order->getTokenValue(),
+            null,
             $product?->getCode() ?? '',
             $channel->getCode() ?? '',
             $offer,
         );
+
+        // Store impression ID and offer ID in session for accept validation
+        $session = $this->requestStack->getSession();
+        $session->set('upsell_impression_id', $impression->getId());
+        $session->set('upsell_offer_id', $offer->getId());
 
         $csrfToken = $this->csrfTokenManager->getToken('upsell_accept')->getValue();
 
@@ -112,10 +120,23 @@ final class PostPurchaseController extends AbstractController
 
     public function acceptAction(int $offerId, Request $request): JsonResponse
     {
+        // Validate CSRF token
         $token = $request->headers->get('X-CSRF-Token', '');
         if (!$this->isCsrfTokenValid('upsell_accept', $token)) {
             return new JsonResponse(['error' => 'Invalid CSRF token'], Response::HTTP_FORBIDDEN);
         }
+
+        // Validate the offer ID matches the one issued in this session
+        $session = $this->requestStack->getSession();
+        $sessionOfferId = $session->get('upsell_offer_id');
+        if (null === $sessionOfferId || $sessionOfferId !== $offerId) {
+            return new JsonResponse(['error' => 'Invalid offer'], Response::HTTP_FORBIDDEN);
+        }
+
+        // Clear session to prevent replay
+        $impressionId = (int) $session->get('upsell_impression_id', 0);
+        $session->remove('upsell_offer_id');
+        $session->remove('upsell_impression_id');
 
         /** @var UpsellOffer|null $offer */
         $offer = $this->offerRepository->find($offerId);
@@ -153,10 +174,12 @@ final class PostPurchaseController extends AbstractController
         $this->entityManager->flush();
 
         // Record accepted impression server-side
-        $impressionId = (int) $request->headers->get('X-Impression-Id', '0');
         if ($impressionId > 0) {
             $this->analyticsService->recordAccepted($impressionId, $discountedPrice);
         }
+
+        // Invalidate CSRF token after use
+        $this->csrfTokenManager->removeToken('upsell_accept');
 
         return new JsonResponse(['success' => true, 'revenue' => $discountedPrice]);
     }

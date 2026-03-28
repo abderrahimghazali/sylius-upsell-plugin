@@ -106,7 +106,7 @@
                             <tbody>
                                 {% for row in breakdown %}
                                     <tr>
-                                        <td>{{ row.offer_name }}</td>
+                                        <td>{{ row.offer_name|e('html') }}</td>
                                         <td>
                                             {% if row.type == 'fbt' %}
                                                 <span class="badge bg-blue-lt">FBT</span>
@@ -140,10 +140,10 @@
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: {{ dailyRevenue|map(r => r.date)|json_encode|raw }},
+                labels: {{ dailyRevenue|map(r => r.date)|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP'))|raw }},
                 datasets: [{
-                    label: '{{ 'upsell.ui.revenue_col'|trans }}',
-                    data: {{ dailyRevenue|map(r => r.revenue / 100)|json_encode|raw }},
+                    label: {{ 'upsell.ui.revenue_col'|trans|json_encode(constant('JSON_HEX_TAG'))|raw }},
+                    data: {{ dailyRevenue|map(r => r.revenue / 100)|json_encode(constant('JSON_HEX_TAG'))|raw }},
                     backgroundColor: 'rgba(32, 107, 196, 0.6)',
                     borderColor: 'rgba(32, 107, 196, 1)',
                     borderWidth: 1,

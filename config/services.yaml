@@ -47,7 +47,6 @@ services:
     Abderrahim\SyliusUpsellPlugin\Controller\Shop\PostPurchaseController:
         public: true
         arguments:
-            $orderRepository: '@sylius.repository.order'
             $cartContext: '@sylius.context.cart'
             $orderModifier: '@sylius.modifier.order'
             $orderItemQuantityModifier: '@sylius.modifier.order_item_quantity'
