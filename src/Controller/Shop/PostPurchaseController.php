@@ -101,9 +101,20 @@ final class PostPurchaseController extends AbstractController
         /** @var OrderInterface $cart */
         $cart = $this->cartContext->getCart();
 
+        /** @var ChannelInterface $channel */
+        $channel = $this->channelContext->getChannel();
+
         /** @var \Sylius\Component\Core\Model\OrderItemInterface $orderItem */
         $orderItem = $this->orderItemFactory->createNew();
         $orderItem->setVariant($variant);
+
+        // Apply upsell discount
+        if ($offer->getDiscountPercent() > 0) {
+            $originalPrice = $variant->getChannelPricingForChannel($channel)?->getPrice() ?? 0;
+            $discountedPrice = (int) round($originalPrice * (100 - $offer->getDiscountPercent()) / 100);
+            $orderItem->setUnitPrice($discountedPrice);
+            $orderItem->setImmutable(true);
+        }
 
         $this->orderItemQuantityModifier->modify($orderItem, 1);
         $this->orderModifier->addToOrder($cart, $orderItem);
