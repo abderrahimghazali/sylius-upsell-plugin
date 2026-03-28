@@ -18,9 +18,14 @@ export default class extends Controller {
         if (!this.placeOrderForm) return;
 
         this.placeOrderForm.addEventListener('submit', (e) => {
-            if (!this.offer || this._dismissed || this._accepted) return;
+            if (this._dismissed || this._accepted) return;
             e.preventDefault();
-            this.fetchOffer();
+
+            if (this.offer) {
+                this.showModal();
+            } else {
+                this.fetchOffer();
+            }
         });
     }
 
