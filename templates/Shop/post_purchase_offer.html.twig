@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var disc = formatPrice(data.product.discountedPrice, data.product.currency);
         var imgUrl = data.product.imageUrl || '';
         var img = imgUrl
-            ? '<img src="' + esc(imgUrl) + '" class="rounded" style="width:100px;height:100px;object-fit:cover" alt="' + esc(data.product.name) + '" />'
+            ? '<img src="' + esc(imgUrl) + '" class="rounded" style="width:150px;height:150px;object-fit:cover" alt="' + esc(data.product.name) + '" />'
             : '';
         var badge = data.discountPercent > 0
             ? '<span class="badge bg-danger rounded-pill upsell-discount-badge">-' + data.discountPercent + '%</span>'
