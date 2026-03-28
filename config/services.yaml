@@ -34,6 +34,12 @@ services:
         public: true
 
     # Phase 2 — Post-Purchase Upsell
+    Abderrahim\SyliusUpsellPlugin\Form\Type\UpsellOfferType:
+        arguments:
+            $dataClass: '%upsell.model.offer.class%'
+            $validationGroups: ['Default']
+        tags: ['form.type']
+
     Abderrahim\SyliusUpsellPlugin\Repository\UpsellOfferRepository: ~
 
     Abderrahim\SyliusUpsellPlugin\Service\PostPurchaseOfferResolver: ~
