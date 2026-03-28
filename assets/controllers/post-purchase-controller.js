@@ -126,7 +126,8 @@ export default class extends Controller {
 
         this._accepted = true;
         this.hideModal();
-        window.location.href = '/' + document.documentElement.lang + '/cart/';
+        const locale = window.location.pathname.split('/')[1] || 'en_US';
+        window.location.href = '/' + locale + '/cart/';
     }
 
     decline(event) {
