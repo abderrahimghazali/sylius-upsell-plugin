@@ -5,15 +5,11 @@ declare(strict_types=1);
 namespace Abderrahim\SyliusUpsellPlugin\EventListener;
 
 use Abderrahim\SyliusUpsellPlugin\Entity\UpsellRelation;
-use Abderrahim\SyliusUpsellPlugin\Form\Type\UpsellRelationType;
 use Abderrahim\SyliusUpsellPlugin\Repository\UpsellRelationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Sylius\Bundle\ResourceBundle\Event\ResourceControllerEvent;
 use Sylius\Component\Core\Model\ProductInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 #[AsEventListener(event: 'sylius.product.pre_update', method: 'onProductPreUpdate')]
