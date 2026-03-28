@@ -16,59 +16,29 @@
 
 <style>
     .upsell-hidden { display: none !important; }
-    .upsell-modal__overlay {
-        position: fixed; inset: 0; z-index: 9999;
+    .upsell-overlay {
+        position: fixed; inset: 0; z-index: 1055;
         background: rgba(0, 0, 0, 0.5);
         display: flex; align-items: center; justify-content: center;
+        animation: upsellFadeIn 0.2s ease-out;
     }
-    .upsell-modal__dialog {
-        background: #fff; border-radius: 16px; padding: 2rem;
-        max-width: 480px; width: 90%; text-align: center;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-        animation: upsell-slide-up 0.3s ease-out;
+    .upsell-discount-badge {
+        position: absolute; top: -8px; right: -8px;
     }
-    @keyframes upsell-slide-up {
+    .upsell-price-original {
+        text-decoration: line-through;
+    }
+    @keyframes upsellFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes upsellSlideUp {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
-    .upsell-modal__headline {
-        font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; color: #1a1a2e;
+    .upsell-dialog {
+        animation: upsellSlideUp 0.3s ease-out;
     }
-    .upsell-modal__body { color: #555; margin-bottom: 1.5rem; }
-    .upsell-modal__product {
-        display: flex; align-items: center; gap: 1rem;
-        justify-content: center; margin-bottom: 1.5rem; flex-wrap: wrap;
-    }
-    .upsell-modal__product-image { position: relative; }
-    .upsell-modal__badge {
-        position: absolute; top: -6px; right: -6px;
-        background: #e74c3c; color: #fff; padding: 3px 8px;
-        border-radius: 20px; font-size: 0.8rem; font-weight: 600;
-    }
-    .upsell-modal__product-name { font-size: 1.05rem; margin-bottom: 0.25rem; }
-    .upsell-modal__pricing { display: flex; gap: 0.5rem; align-items: baseline; justify-content: center; }
-    .upsell-modal__price--original {
-        text-decoration: line-through; color: #999; font-size: 0.9rem;
-    }
-    .upsell-modal__price--current {
-        font-size: 1.2rem; font-weight: 700; color: #27ae60;
-    }
-    .upsell-modal__actions {
-        display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;
-    }
-    .upsell-modal__cta {
-        background: #206bc4; color: #fff; border: none;
-        padding: 10px 24px; border-radius: 8px; font-size: 1rem;
-        font-weight: 600; cursor: pointer; transition: background 0.2s;
-    }
-    .upsell-modal__cta:hover { background: #1a56a0; }
-    .upsell-modal__cta:disabled { opacity: 0.6; cursor: wait; }
-    .upsell-modal__decline {
-        background: transparent; border: 1px solid #ddd;
-        padding: 10px 24px; border-radius: 8px; font-size: 1rem;
-        cursor: pointer; color: #666; transition: border-color 0.2s;
-    }
-    .upsell-modal__decline:hover { border-color: #999; }
 </style>
 
 <script>
@@ -106,30 +76,32 @@ document.addEventListener('DOMContentLoaded', function() {
         var disc = formatPrice(data.product.discountedPrice, data.product.currency);
         var imgUrl = data.product.imageUrl || '';
         var img = imgUrl
-            ? '<img src="' + esc(imgUrl) + '" style="width:120px;border-radius:8px" />'
+            ? '<img src="' + esc(imgUrl) + '" class="rounded" style="width:100px;height:100px;object-fit:cover" alt="' + esc(data.product.name) + '" />'
             : '';
         var badge = data.discountPercent > 0
-            ? '<span class="upsell-modal__badge">-' + data.discountPercent + '%</span>'
+            ? '<span class="badge bg-danger rounded-pill upsell-discount-badge">-' + data.discountPercent + '%</span>'
             : '';
 
         modal.innerHTML =
-            '<div class="upsell-modal__overlay">' +
-                '<div class="upsell-modal__dialog">' +
-                    '<h3 class="upsell-modal__headline">' + esc(data.headline) + '</h3>' +
-                    (data.body ? '<p class="upsell-modal__body">' + esc(data.body) + '</p>' : '') +
-                    '<div class="upsell-modal__product">' +
-                        '<div class="upsell-modal__product-image">' + img + badge + '</div>' +
-                        '<div class="upsell-modal__product-info">' +
-                            '<h4 class="upsell-modal__product-name">' + esc(data.product.name) + '</h4>' +
-                            '<div class="upsell-modal__pricing">' +
-                                (data.discountPercent > 0 ? '<span class="upsell-modal__price--original">' + orig + '</span>' : '') +
-                                '<span class="upsell-modal__price--current">' + disc + '</span>' +
+            '<div class="upsell-overlay">' +
+                '<div class="card shadow-lg border-0 upsell-dialog" style="max-width:440px;width:90%">' +
+                    '<div class="card-body text-center p-4">' +
+                        '<h4 class="card-title fw-bold mb-2">' + esc(data.headline) + '</h4>' +
+                        (data.body ? '<p class="text-muted mb-4">' + esc(data.body) + '</p>' : '') +
+                        '<div class="d-flex align-items-center justify-content-center gap-3 mb-4 flex-wrap">' +
+                            '<div class="position-relative">' + img + badge + '</div>' +
+                            '<div class="text-start">' +
+                                '<h6 class="mb-1">' + esc(data.product.name) + '</h6>' +
+                                '<div class="d-flex align-items-baseline gap-2">' +
+                                    (data.discountPercent > 0 ? '<span class="text-muted upsell-price-original small">' + orig + '</span>' : '') +
+                                    '<span class="fw-bold text-success fs-5">' + disc + '</span>' +
+                                '</div>' +
                             '</div>' +
                         '</div>' +
-                    '</div>' +
-                    '<div class="upsell-modal__actions">' +
-                        '<button type="button" class="upsell-modal__cta" id="upsell-accept">' + esc(data.ctaLabel) + '</button>' +
-                        '<button type="button" class="upsell-modal__decline" id="upsell-decline">' + esc(data.declineLabel) + '</button>' +
+                        '<div class="d-flex gap-2 justify-content-center flex-wrap">' +
+                            '<button type="button" class="btn btn-primary btn-lg" id="upsell-accept">' + esc(data.ctaLabel) + '</button>' +
+                            '<button type="button" class="btn btn-outline-secondary" id="upsell-decline">' + esc(data.declineLabel) + '</button>' +
+                        '</div>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -159,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function acceptOffer() {
         var btn = document.getElementById('upsell-accept');
         btn.disabled = true;
-        btn.textContent = '...';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Adding...';
 
         var url = ACCEPT_URL_BASE.replace('/0', '/' + offer.offerId);
         fetch(url, {
