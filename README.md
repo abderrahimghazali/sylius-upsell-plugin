@@ -114,13 +114,17 @@ bin/console doctrine:migrations:migrate
 
 6. Symlink the plugin assets and rebuild:
 
-```bash
-# Create the symlink (from your project root)
-mkdir -p node_modules/@abderrahimghazali
-ln -s ../../vendor/abderrahimghazali/sylius-upsell-plugin/assets node_modules/@abderrahimghazali/sylius-upsell-plugin
+Add to your project's `package.json` dependencies:
 
-# Rebuild assets
-yarn encore dev
+```json
+"@abderrahimghazali/sylius-upsell-plugin": "file:vendor/abderrahimghazali/sylius-upsell-plugin/assets"
+```
+
+Then install and rebuild:
+
+```bash
+npm install
+npm run build
 ```
 
 ## Entity: UpsellRelation
