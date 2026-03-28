@@ -1,159 +1,174 @@
 {# Injected into checkout complete page — intercepts Place Order with upsell modal #}
 {% set order = hookable_metadata.context.order|default(null) %}
+{% set orderId = order.id|default(0) %}
+{# Fallback: try to get order ID from Sylius cart context #}
+{% if orderId == 0 and sylius is defined and sylius.cart is defined and sylius.cart.id is defined %}
+    {% set orderId = sylius.cart.id %}
+{% endif %}
 
-{% if order is not null and order.id|default(0) > 0 %}
-    <div id="upsell-modal" class="upsell-hidden"></div>
+{% if orderId > 0 %}
+    {% set offerUrl = path('abderrahim_sylius_upsell_shop_offer', {'orderId': orderId}) %}
+    {% set acceptUrlBase = path('abderrahim_sylius_upsell_shop_accept', {'offerId': 0}) %}
+{% endif %}
 
-    <style>
-        .upsell-hidden { display: none !important; }
-        .upsell-modal__overlay {
-            position: fixed; inset: 0; z-index: 9999;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .upsell-modal__dialog {
-            background: #fff; border-radius: 16px; padding: 2rem;
-            max-width: 480px; width: 90%; text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-            animation: upsell-slide-up 0.3s ease-out;
-        }
-        @keyframes upsell-slide-up {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .upsell-modal__headline {
-            font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; color: #1a1a2e;
-        }
-        .upsell-modal__body { color: #555; margin-bottom: 1.5rem; }
-        .upsell-modal__product {
-            display: flex; align-items: center; gap: 1rem;
-            justify-content: center; margin-bottom: 1.5rem; flex-wrap: wrap;
-        }
-        .upsell-modal__product-image { position: relative; }
-        .upsell-modal__badge {
-            position: absolute; top: -6px; right: -6px;
-            background: #e74c3c; color: #fff; padding: 3px 8px;
-            border-radius: 20px; font-size: 0.8rem; font-weight: 600;
-        }
-        .upsell-modal__product-name { font-size: 1.05rem; margin-bottom: 0.25rem; }
-        .upsell-modal__pricing { display: flex; gap: 0.5rem; align-items: baseline; justify-content: center; }
-        .upsell-modal__price--original {
-            text-decoration: line-through; color: #999; font-size: 0.9rem;
-        }
-        .upsell-modal__price--current {
-            font-size: 1.2rem; font-weight: 700; color: #27ae60;
-        }
-        .upsell-modal__actions {
-            display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;
-        }
-        .upsell-modal__cta {
-            background: #206bc4; color: #fff; border: none;
-            padding: 10px 24px; border-radius: 8px; font-size: 1rem;
-            font-weight: 600; cursor: pointer; transition: background 0.2s;
-        }
-        .upsell-modal__cta:hover { background: #1a56a0; }
-        .upsell-modal__cta:disabled { opacity: 0.6; cursor: wait; }
-        .upsell-modal__decline {
-            background: transparent; border: 1px solid #ddd;
-            padding: 10px 24px; border-radius: 8px; font-size: 1rem;
-            cursor: pointer; color: #666; transition: border-color 0.2s;
-        }
-        .upsell-modal__decline:hover { border-color: #999; }
-    </style>
+<div id="upsell-modal" class="upsell-hidden"></div>
 
-    <script>
-    (function() {
-        var OFFER_URL = '{{ path('abderrahim_sylius_upsell_shop_offer', {'orderId': order.id}) }}';
-        var ACCEPT_URL_BASE = '{{ path('abderrahim_sylius_upsell_shop_accept', {'offerId': 0}) }}';
-        var modal = document.getElementById('upsell-modal');
-        var form = document.querySelector('form[name="sylius_checkout_complete"]');
-        var offer = null;
-        var intercepted = false;
+<style>
+    .upsell-hidden { display: none !important; }
+    .upsell-modal__overlay {
+        position: fixed; inset: 0; z-index: 9999;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .upsell-modal__dialog {
+        background: #fff; border-radius: 16px; padding: 2rem;
+        max-width: 480px; width: 90%; text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        animation: upsell-slide-up 0.3s ease-out;
+    }
+    @keyframes upsell-slide-up {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .upsell-modal__headline {
+        font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; color: #1a1a2e;
+    }
+    .upsell-modal__body { color: #555; margin-bottom: 1.5rem; }
+    .upsell-modal__product {
+        display: flex; align-items: center; gap: 1rem;
+        justify-content: center; margin-bottom: 1.5rem; flex-wrap: wrap;
+    }
+    .upsell-modal__product-image { position: relative; }
+    .upsell-modal__badge {
+        position: absolute; top: -6px; right: -6px;
+        background: #e74c3c; color: #fff; padding: 3px 8px;
+        border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+    }
+    .upsell-modal__product-name { font-size: 1.05rem; margin-bottom: 0.25rem; }
+    .upsell-modal__pricing { display: flex; gap: 0.5rem; align-items: baseline; justify-content: center; }
+    .upsell-modal__price--original {
+        text-decoration: line-through; color: #999; font-size: 0.9rem;
+    }
+    .upsell-modal__price--current {
+        font-size: 1.2rem; font-weight: 700; color: #27ae60;
+    }
+    .upsell-modal__actions {
+        display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;
+    }
+    .upsell-modal__cta {
+        background: #206bc4; color: #fff; border: none;
+        padding: 10px 24px; border-radius: 8px; font-size: 1rem;
+        font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .upsell-modal__cta:hover { background: #1a56a0; }
+    .upsell-modal__cta:disabled { opacity: 0.6; cursor: wait; }
+    .upsell-modal__decline {
+        background: transparent; border: 1px solid #ddd;
+        padding: 10px 24px; border-radius: 8px; font-size: 1rem;
+        cursor: pointer; color: #666; transition: border-color 0.2s;
+    }
+    .upsell-modal__decline:hover { border-color: #999; }
+</style>
 
-        if (!form) return;
+<script>
+(function() {
+    var OFFER_URL = '{{ offerUrl|default('')|e('js') }}';
+    var ACCEPT_URL_BASE = '{{ acceptUrlBase|default('')|e('js') }}';
 
-        function formatPrice(cents, currency) {
-            try {
-                return new Intl.NumberFormat(document.documentElement.lang || 'en', {
-                    style: 'currency', currency: currency || 'USD'
-                }).format(cents / 100);
-            } catch(e) { return currency + ' ' + (cents / 100).toFixed(2); }
-        }
+    if (!OFFER_URL) return;
 
-        function showModal(data) {
-            offer = data;
-            var orig = formatPrice(data.product.originalPrice, data.product.currency);
-            var disc = formatPrice(data.product.discountedPrice, data.product.currency);
-            var img = data.product.image
-                ? '<img src="/media/image/' + data.product.image + '" style="width:120px;border-radius:8px" />'
-                : '';
-            var badge = data.discountPercent > 0
-                ? '<span class="upsell-modal__badge">-' + data.discountPercent + '%</span>'
-                : '';
+    var modal = document.getElementById('upsell-modal');
+    var form = document.querySelector('form[name="sylius_checkout_complete"]');
+    var offer = null;
+    var intercepted = false;
 
-            modal.innerHTML =
-                '<div class="upsell-modal__overlay">' +
-                    '<div class="upsell-modal__dialog">' +
-                        '<h3 class="upsell-modal__headline">' + data.headline + '</h3>' +
-                        (data.body ? '<p class="upsell-modal__body">' + data.body + '</p>' : '') +
-                        '<div class="upsell-modal__product">' +
-                            '<div class="upsell-modal__product-image">' + img + badge + '</div>' +
-                            '<div class="upsell-modal__product-info">' +
-                                '<h4 class="upsell-modal__product-name">' + data.product.name + '</h4>' +
-                                '<div class="upsell-modal__pricing">' +
-                                    (data.discountPercent > 0 ? '<span class="upsell-modal__price--original">' + orig + '</span>' : '') +
-                                    '<span class="upsell-modal__price--current">' + disc + '</span>' +
-                                '</div>' +
+    if (!form) return;
+
+    function formatPrice(cents, currency) {
+        try {
+            return new Intl.NumberFormat(document.documentElement.lang || 'en', {
+                style: 'currency', currency: currency || 'USD'
+            }).format(cents / 100);
+        } catch(e) { return currency + ' ' + (cents / 100).toFixed(2); }
+    }
+
+    function showModal(data) {
+        offer = data;
+        var orig = formatPrice(data.product.originalPrice, data.product.currency);
+        var disc = formatPrice(data.product.discountedPrice, data.product.currency);
+        var img = data.product.image
+            ? '<img src="/media/image/' + data.product.image + '" style="width:120px;border-radius:8px" />'
+            : '';
+        var badge = data.discountPercent > 0
+            ? '<span class="upsell-modal__badge">-' + data.discountPercent + '%</span>'
+            : '';
+
+        modal.innerHTML =
+            '<div class="upsell-modal__overlay">' +
+                '<div class="upsell-modal__dialog">' +
+                    '<h3 class="upsell-modal__headline">' + data.headline + '</h3>' +
+                    (data.body ? '<p class="upsell-modal__body">' + data.body + '</p>' : '') +
+                    '<div class="upsell-modal__product">' +
+                        '<div class="upsell-modal__product-image">' + img + badge + '</div>' +
+                        '<div class="upsell-modal__product-info">' +
+                            '<h4 class="upsell-modal__product-name">' + data.product.name + '</h4>' +
+                            '<div class="upsell-modal__pricing">' +
+                                (data.discountPercent > 0 ? '<span class="upsell-modal__price--original">' + orig + '</span>' : '') +
+                                '<span class="upsell-modal__price--current">' + disc + '</span>' +
                             '</div>' +
                         '</div>' +
-                        '<div class="upsell-modal__actions">' +
-                            '<button type="button" class="upsell-modal__cta" id="upsell-accept">' + data.ctaLabel + '</button>' +
-                            '<button type="button" class="upsell-modal__decline" id="upsell-decline">' + data.declineLabel + '</button>' +
-                        '</div>' +
                     '</div>' +
-                '</div>';
+                    '<div class="upsell-modal__actions">' +
+                        '<button type="button" class="upsell-modal__cta" id="upsell-accept">' + data.ctaLabel + '</button>' +
+                        '<button type="button" class="upsell-modal__decline" id="upsell-decline">' + data.declineLabel + '</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
 
-            modal.classList.remove('upsell-hidden');
+        modal.classList.remove('upsell-hidden');
 
-            document.getElementById('upsell-accept').addEventListener('click', acceptOffer);
-            document.getElementById('upsell-decline').addEventListener('click', declineOffer);
-        }
+        document.getElementById('upsell-accept').addEventListener('click', acceptOffer);
+        document.getElementById('upsell-decline').addEventListener('click', declineOffer);
+    }
 
-        function acceptOffer() {
-            var btn = document.getElementById('upsell-accept');
-            btn.disabled = true;
-            btn.textContent = '...';
+    function acceptOffer() {
+        var btn = document.getElementById('upsell-accept');
+        btn.disabled = true;
+        btn.textContent = '...';
 
-            var url = ACCEPT_URL_BASE.replace('/0', '/' + offer.offerId);
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(function() { modal.classList.add('upsell-hidden'); form.submit(); })
-            .catch(function() { modal.classList.add('upsell-hidden'); form.submit(); });
-        }
-
-        function declineOffer() {
+        var url = ACCEPT_URL_BASE.replace('/0', '/' + offer.offerId);
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(function() {
             modal.classList.add('upsell-hidden');
-            form.submit();
-        }
+            var locale = window.location.pathname.split('/')[1] || 'en_US';
+            window.location.href = '/' + locale + '/cart/';
+        })
+        .catch(function() { modal.classList.add('upsell-hidden'); form.submit(); });
+    }
 
-        form.addEventListener('submit', function(e) {
-            if (intercepted) return;
-            intercepted = true;
-            e.preventDefault();
+    function declineOffer() {
+        modal.classList.add('upsell-hidden');
+        form.submit();
+    }
 
-            fetch(OFFER_URL)
-                .then(function(r) {
-                    if (!r.ok || r.status === 204) { form.submit(); return; }
-                    return r.json();
-                })
-                .then(function(data) {
-                    if (data) showModal(data);
-                    else form.submit();
-                })
-                .catch(function() { form.submit(); });
-        });
-    })();
-    </script>
-{% endif %}
+    form.addEventListener('submit', function(e) {
+        if (intercepted) return;
+        intercepted = true;
+        e.preventDefault();
+
+        fetch(OFFER_URL)
+            .then(function(r) {
+                if (!r.ok || r.status === 204) { form.submit(); return; }
+                return r.json();
+            })
+            .then(function(data) {
+                if (data) showModal(data);
+                else form.submit();
+            })
+            .catch(function() { form.submit(); });
+    });
+})();
+</script>

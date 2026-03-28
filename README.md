@@ -39,28 +39,17 @@
 
 ## Features
 
-### Frequently Bought Together (FBT)
-
-- **Manual product relations** — link related products to any source product from the admin panel
-- **Algorithmic fallback** — automatically suggests products based on co-purchase history when no manual relations exist
-- **Configurable thresholds** — set the minimum co-purchase count before a suggestion appears
-- **One-click add-all-to-cart** — shoppers can add the entire FBT bundle in a single click
-- **Discount badges** — optional discount percentage displayed on related products
-- **Customizable section title** — change the "Frequently bought together" heading from the admin
-- **Twig hooks** — auto-injects into the product page, no template overrides needed
-
-### Checkout Upsell Modal
-
-- **Upsell offers on checkout** — display a modal with a special offer when customer clicks "Place order"
-- **Trigger product targeting** — tie offers to specific products in the cart
-- **Variant-level offers** — optionally target a specific variant of the offer product
-- **Discount percentage** — product added to cart at discounted price
-- **Custom copy** — configure headline, body, CTA label, and decline label per offer
-- **Date scheduling** — set start and end dates for time-limited offers
-- **Priority system** — control which offer is shown when multiple match
-- **Accept → cart redirect** — customer can review, change size/quantity before placing order
-- **Decline → order placed** — seamless flow, no friction
-- **No external JS** — pure vanilla JS via Stimulus controllers
+- **Frequently Bought Together section** on every product page with manual or algorithmic product suggestions
+- **One-click add-all-to-cart** for the entire FBT bundle
+- **Algorithmic co-purchase detection** from order history with configurable thresholds
+- **Checkout upsell modal** — intercepts "Place order" with a special offer before completing the order
+- **Trigger product targeting** — tie offers to specific products in the cart, or use catch-all
+- **Discount percentage** — upsell product added to cart at discounted price
+- **Customizable copy** — headline, body, CTA label, and decline label per offer
+- **Date scheduling** — start and end dates for time-limited offers
+- **Priority system** — control which offer wins when multiple match
+- **Admin CRUD** for upsell offers under Marketing, and global FBT settings under Configuration
+- **Drag-and-drop reordering** of manual FBT relations with optional discount badges
 
 ## Requirements
 
