@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 final class ImpressionController extends AbstractController
 {
     private const ALLOWED_TYPES = [UpsellImpression::TYPE_FBT, UpsellImpression::TYPE_POST_PURCHASE];
+    private const MAX_IMPRESSIONS_PER_SESSION = 20;
 
     public function __construct(
         private readonly UpsellAnalyticsService $analyticsService,
@@ -25,6 +26,13 @@ final class ImpressionController extends AbstractController
 
     public function recordAction(Request $request): JsonResponse
     {
+        // Rate limit: max impressions per session
+        $session = $request->getSession();
+        $count = (int) $session->get('upsell_impression_count', 0);
+        if ($count >= self::MAX_IMPRESSIONS_PER_SESSION) {
+            return new JsonResponse(['error' => 'Rate limit exceeded'], Response::HTTP_TOO_MANY_REQUESTS);
+        }
+
         $data = json_decode($request->getContent(), true);
 
         if (!\is_array($data) || empty($data['type']) || empty($data['productCode'])) {
@@ -48,8 +56,6 @@ final class ImpressionController extends AbstractController
             $offer = $this->offerRepository->find((int) $offerId);
         }
 
-        // Only allow recording "shown" impressions from this endpoint.
-        // Accepted/declined are handled server-side in PostPurchaseController.
         $impression = $this->analyticsService->recordImpression(
             $type,
             $orderToken,
@@ -58,8 +64,10 @@ final class ImpressionController extends AbstractController
             $offer,
         );
 
+        // Increment session counter
+        $session->set('upsell_impression_count', $count + 1);
+
         // Store impression ID in session for FBT accept tracking
-        $session = $request->getSession();
         $fbtImpressionIds = $session->get('upsell_fbt_impression_ids', []);
         $fbtImpressionIds[] = $impression->getId();
         $session->set('upsell_fbt_impression_ids', $fbtImpressionIds);

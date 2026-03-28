@@ -7,6 +7,12 @@
     <entity name="Abderrahim\SyliusUpsellPlugin\Entity\UpsellOffer"
             table="upsell_offer">
 
+        <indexes>
+            <index name="idx_offer_enabled_priority" columns="enabled,priority"/>
+            <index name="idx_offer_trigger_product" columns="trigger_product_id"/>
+            <index name="idx_offer_dates" columns="starts_at,ends_at"/>
+        </indexes>
+
         <id name="id" column="id" type="integer">
             <generator strategy="AUTO"/>
         </id>
