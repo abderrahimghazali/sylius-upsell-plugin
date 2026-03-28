@@ -1,5 +1,7 @@
 {# Injected into the thank-you page via Twig hook #}
+<!-- UPSELL DEBUG: hook rendered, context keys: {{ hookable_metadata.context|keys|join(', ') }} -->
 {% set orderToken = hookable_metadata.context.order.tokenValue|default('') %}
+<!-- UPSELL DEBUG: orderToken={{ orderToken }} -->
 
 {% if orderToken %}
     <div data-controller="post-purchase"
