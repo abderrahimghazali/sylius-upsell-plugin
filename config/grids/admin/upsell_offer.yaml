@@ -53,7 +53,7 @@ sylius_grid:
                 main:
                     create:
                         type: create
-                        label: upsell.ui.create_offer
+                        label: sylius.ui.create
                         options:
                             link:
                                 route: upsell_admin_offer_create

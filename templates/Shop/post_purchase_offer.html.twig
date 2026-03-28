@@ -2,12 +2,7 @@
 {% set order = hookable_metadata.context.order|default(null) %}
 
 {% if order is not null and order.id|default(0) > 0 %}
-    <div data-controller="abderrahimghazali--sylius-upsell-plugin--post-purchase"
-         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-offer-url-value="{{ path('abderrahim_sylius_upsell_shop_offer', {'orderId': order.id}) }}"
-         data-abderrahimghazali--sylius-upsell-plugin--post-purchase-accept-url-value="{{ path('abderrahim_sylius_upsell_shop_accept', {'offerId': 0}) }}">
-
-        <div data-abderrahimghazali--sylius-upsell-plugin--post-purchase-target="modal" class="upsell-hidden"></div>
-    </div>
+    <div id="upsell-modal" class="upsell-hidden"></div>
 
     <style>
         .upsell-hidden { display: none !important; }
@@ -41,7 +36,7 @@
             border-radius: 20px; font-size: 0.8rem; font-weight: 600;
         }
         .upsell-modal__product-name { font-size: 1.05rem; margin-bottom: 0.25rem; }
-        .upsell-modal__pricing { display: flex; gap: 0.5rem; align-items: baseline; }
+        .upsell-modal__pricing { display: flex; gap: 0.5rem; align-items: baseline; justify-content: center; }
         .upsell-modal__price--original {
             text-decoration: line-through; color: #999; font-size: 0.9rem;
         }
@@ -65,4 +60,100 @@
         }
         .upsell-modal__decline:hover { border-color: #999; }
     </style>
+
+    <script>
+    (function() {
+        var OFFER_URL = '{{ path('abderrahim_sylius_upsell_shop_offer', {'orderId': order.id}) }}';
+        var ACCEPT_URL_BASE = '{{ path('abderrahim_sylius_upsell_shop_accept', {'offerId': 0}) }}';
+        var modal = document.getElementById('upsell-modal');
+        var form = document.querySelector('form[name="sylius_checkout_complete"]');
+        var offer = null;
+        var intercepted = false;
+
+        if (!form) return;
+
+        function formatPrice(cents, currency) {
+            try {
+                return new Intl.NumberFormat(document.documentElement.lang || 'en', {
+                    style: 'currency', currency: currency || 'USD'
+                }).format(cents / 100);
+            } catch(e) { return currency + ' ' + (cents / 100).toFixed(2); }
+        }
+
+        function showModal(data) {
+            offer = data;
+            var orig = formatPrice(data.product.originalPrice, data.product.currency);
+            var disc = formatPrice(data.product.discountedPrice, data.product.currency);
+            var img = data.product.image
+                ? '<img src="/media/image/' + data.product.image + '" style="width:120px;border-radius:8px" />'
+                : '';
+            var badge = data.discountPercent > 0
+                ? '<span class="upsell-modal__badge">-' + data.discountPercent + '%</span>'
+                : '';
+
+            modal.innerHTML =
+                '<div class="upsell-modal__overlay">' +
+                    '<div class="upsell-modal__dialog">' +
+                        '<h3 class="upsell-modal__headline">' + data.headline + '</h3>' +
+                        (data.body ? '<p class="upsell-modal__body">' + data.body + '</p>' : '') +
+                        '<div class="upsell-modal__product">' +
+                            '<div class="upsell-modal__product-image">' + img + badge + '</div>' +
+                            '<div class="upsell-modal__product-info">' +
+                                '<h4 class="upsell-modal__product-name">' + data.product.name + '</h4>' +
+                                '<div class="upsell-modal__pricing">' +
+                                    (data.discountPercent > 0 ? '<span class="upsell-modal__price--original">' + orig + '</span>' : '') +
+                                    '<span class="upsell-modal__price--current">' + disc + '</span>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="upsell-modal__actions">' +
+                            '<button type="button" class="upsell-modal__cta" id="upsell-accept">' + data.ctaLabel + '</button>' +
+                            '<button type="button" class="upsell-modal__decline" id="upsell-decline">' + data.declineLabel + '</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+
+            modal.classList.remove('upsell-hidden');
+
+            document.getElementById('upsell-accept').addEventListener('click', acceptOffer);
+            document.getElementById('upsell-decline').addEventListener('click', declineOffer);
+        }
+
+        function acceptOffer() {
+            var btn = document.getElementById('upsell-accept');
+            btn.disabled = true;
+            btn.textContent = '...';
+
+            var url = ACCEPT_URL_BASE.replace('/0', '/' + offer.offerId);
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(function() { modal.classList.add('upsell-hidden'); form.submit(); })
+            .catch(function() { modal.classList.add('upsell-hidden'); form.submit(); });
+        }
+
+        function declineOffer() {
+            modal.classList.add('upsell-hidden');
+            form.submit();
+        }
+
+        form.addEventListener('submit', function(e) {
+            if (intercepted) return;
+            intercepted = true;
+            e.preventDefault();
+
+            fetch(OFFER_URL)
+                .then(function(r) {
+                    if (!r.ok || r.status === 204) { form.submit(); return; }
+                    return r.json();
+                })
+                .then(function(data) {
+                    if (data) showModal(data);
+                    else form.submit();
+                })
+                .catch(function() { form.submit(); });
+        });
+    })();
+    </script>
 {% endif %}

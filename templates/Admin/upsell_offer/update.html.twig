@@ -10,17 +10,22 @@
 
         {% include '@SyliusAdmin/shared/crud/common/content/flashes.html.twig' %}
 
-        {% from '@SyliusAdmin/shared/helper/breadcrumbs.html.twig' import breadcrumbs %}
         <div class="page-header" data-sticky-header>
             <div class="container-xl">
-                {{ breadcrumbs([
-                    { name: 'sylius.ui.dashboard', url: path('sylius_admin_dashboard'), active: false },
-                    { name: 'upsell.ui.upsell_offers', url: path('upsell_admin_offer_index'), active: false },
-                    { name: offer.name, active: true },
-                ]) }}
+                <ol class="breadcrumb" aria-label="breadcrumbs">
+                    <li class="breadcrumb-item"><a href="{{ path('sylius_admin_dashboard') }}">{{ 'sylius.ui.dashboard'|trans }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('upsell_admin_offer_index') }}">{{ 'upsell.ui.upsell_offers'|trans }}</a></li>
+                    <li class="breadcrumb-item active">{{ offer.name }}</li>
+                </ol>
                 <div class="row mt-3 row-gap-2">
                     <div class="col-12 col-md">
                         <h1 class="page-title">{{ offer.name }}</h1>
+                    </div>
+                    <div class="col-12 col-md-auto ms-auto d-print-none">
+                        <div class="btn-list">
+                            <a href="{{ path('upsell_admin_offer_index') }}" class="btn btn">{{ 'sylius.ui.back'|trans }}</a>
+                            <button type="submit" form="upsell_offer_form" class="btn btn-primary">{{ 'sylius.ui.save'|trans }}</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -29,7 +34,7 @@
         <div class="page-body">
             <div class="container-xl">
                 {% form_theme form '@SyliusAdmin/shared/form_theme.html.twig' %}
-                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'id': 'upsell_offer_form'}}) }}
                 <div class="row row-cards">
                     <div class="col-lg-8">
                         <div class="card">
@@ -68,14 +73,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="d-flex gap-2 mt-3">
-                    <button type="submit" class="btn btn-primary">
-                        {{ 'sylius.ui.save'|trans }}
-                    </button>
-                    <a href="{{ path('upsell_admin_offer_index') }}" class="btn btn-outline-secondary">
-                        {{ 'sylius.ui.cancel'|trans }}
-                    </a>
                 </div>
                 {{ form_end(form) }}
             </div>
