@@ -37,6 +37,9 @@
 ### Shop — Checkout Upsell Modal
 ![Checkout Upsell Modal](docs/images/checkout-upsell-modal.png)
 
+### Admin — Upsell Analytics Dashboard
+![Admin Analytics](docs/images/admin-analytics.png)
+
 ## Features
 
 - **Frequently Bought Together section** on every product page with manual or algorithmic product suggestions
