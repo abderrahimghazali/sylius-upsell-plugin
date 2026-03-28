@@ -39,7 +39,7 @@
 
 ## Features
 
-### Phase 1 — Frequently Bought Together (FBT)
+### Frequently Bought Together (FBT)
 
 - **Manual product relations** — link related products to any source product from the admin panel
 - **Algorithmic fallback** — automatically suggests products based on co-purchase history when no manual relations exist
@@ -49,16 +49,17 @@
 - **Customizable section title** — change the "Frequently bought together" heading from the admin
 - **Twig hooks** — auto-injects into the product page, no template overrides needed
 
-### Phase 2 — Checkout Upsell Modal
+### Checkout Upsell Modal
 
-- **Post-purchase offers** — display a modal with a special offer after checkout completion
-- **Trigger product targeting** — tie offers to specific products in the order
+- **Upsell offers on checkout** — display a modal with a special offer when customer clicks "Place order"
+- **Trigger product targeting** — tie offers to specific products in the cart
 - **Variant-level offers** — optionally target a specific variant of the offer product
-- **Discount percentage** — show a compelling discount on the upsell product
+- **Discount percentage** — product added to cart at discounted price
 - **Custom copy** — configure headline, body, CTA label, and decline label per offer
 - **Date scheduling** — set start and end dates for time-limited offers
 - **Priority system** — control which offer is shown when multiple match
-- **Enable/disable toggle** — activate or deactivate offers from the grid
+- **Accept → cart redirect** — customer can review, change size/quantity before placing order
+- **Decline → order placed** — seamless flow, no friction
 - **No external JS** — pure vanilla JS via Stimulus controllers
 
 ## Requirements

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-#### Phase 1 — Frequently Bought Together
+#### Frequently Bought Together
 - `UpsellRelation` entity for manual product-to-product upsell links with position and optional discount
 - `UpsellConfiguration` entity (singleton) for global FBT settings
 - `FrequentlyBoughtTogetherResolver` with manual-first, algorithmic fallback (co-purchase query on `sylius_order_item`)
@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Stimulus `fbt-controller` with checkbox toggling and one-click add-all-to-cart
 - Admin: Configuration > Upsell Settings page (enable/disable, threshold, max products, section title, fallback strategy)
 
-#### Phase 2 — Checkout Upsell Modal
+#### Checkout Upsell Modal
 - `UpsellOffer` entity with trigger/offer products, discount %, scheduling, priority, and customizable copy
 - `PostPurchaseOfferResolver` matching offers by order products or catch-all, respecting date range and excluding already-purchased products
 - Upsell modal on checkout complete page — intercepts "Place order" click
