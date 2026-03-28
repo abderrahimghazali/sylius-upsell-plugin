@@ -1,7 +1,7 @@
 {# Injected into checkout complete page — intercepts Place Order with upsell modal #}
 {% set order = hookable_metadata.context.order|default(null) %}
 
-{% if order is not null and order.tokenValue is defined %}
+{% if order is not null and order.tokenValue|default('') is not empty %}
     <div data-controller="abderrahimghazali--sylius-upsell-plugin--post-purchase"
          data-abderrahimghazali--sylius-upsell-plugin--post-purchase-offer-url-value="{{ path('abderrahim_sylius_upsell_shop_offer', {'orderToken': order.tokenValue}) }}"
          data-abderrahimghazali--sylius-upsell-plugin--post-purchase-cart-token-value="{{ order.tokenValue }}"
