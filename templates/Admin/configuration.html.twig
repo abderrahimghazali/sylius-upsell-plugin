@@ -1,51 +1,78 @@
-{% extends '@SyliusAdmin/layout.html.twig' %}
+{% extends '@SyliusAdmin/shared/layout/base.html.twig' %}
 
-{% block title %}{{ 'upsell.ui.upsell_settings'|trans }} {{ parent() }}{% endblock %}
+{% block title %}{{ 'upsell.ui.upsell_settings'|trans }} | {{ parent() }}{% endblock %}
 
-{% block content %}
-    <div class="ui segment">
-        <h2 class="ui dividing header">
-            <i class="arrow up icon"></i>
-            {{ 'upsell.ui.upsell_settings'|trans }}
-        </h2>
+{% block body %}
+    {% include '@SyliusAdmin/shared/crud/common/sidebar.html.twig' %}
 
-        {{ form_start(form, {'attr': {'class': 'ui form', 'novalidate': 'novalidate'}}) }}
+    <div class="page-wrapper">
+        {% include '@SyliusAdmin/shared/crud/common/navbar.html.twig' %}
 
-        <div class="ui two column stackable grid">
-            <div class="column">
-                <h4 class="ui header">{{ 'upsell.ui.general'|trans }}</h4>
-                <div class="field">
-                    {{ form_row(form.enabled) }}
-                </div>
-                <div class="field">
-                    {{ form_row(form.sectionTitle) }}
-                </div>
-                <div class="field">
-                    {{ form_row(form.fallbackStrategy) }}
-                </div>
-            </div>
+        {% include '@SyliusAdmin/shared/crud/common/content/flashes.html.twig' %}
 
-            <div class="column">
-                <h4 class="ui header">{{ 'upsell.ui.display'|trans }}</h4>
-                <div class="field">
-                    {{ form_row(form.maxProductsShown) }}
-                </div>
-                <div class="field">
-                    {{ form_row(form.minCoPurchaseThreshold) }}
-                </div>
-                <div class="field">
-                    {{ form_row(form.showDiscountBadge) }}
+        {% from '@SyliusAdmin/shared/helper/breadcrumbs.html.twig' import breadcrumbs %}
+        <div class="page-header" data-sticky-header>
+            <div class="container-xl">
+                {{ breadcrumbs([
+                    { name: 'sylius.ui.dashboard', url: path('sylius_admin_dashboard'), active: false },
+                    { name: 'upsell.ui.upsell_settings', active: true },
+                ]) }}
+                <div class="row mt-3 row-gap-2">
+                    <div class="col-12 col-md">
+                        <div class="d-flex gap-3 align-items-center">
+                            <div class="d-flex flex-column gap-2">
+                                <h1 class="page-title">
+                                    {{ 'upsell.ui.upsell_settings'|trans }}
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-auto ms-auto d-print-none">
+                        <div class="btn-list">
+                            <button type="submit" form="upsell-config-form" class="btn btn-primary">
+                                {{ 'sylius.ui.save'|trans }}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="ui hidden divider"></div>
+        <div class="page-body">
+            <div class="container-xl">
+                {% form_theme form '@SyliusAdmin/shared/form_theme.html.twig' %}
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'id': 'upsell-config-form'}}) }}
+                <div class="row row-cards">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">{{ 'upsell.ui.general'|trans }}</h3>
+                            </div>
+                            <div class="card-body">
+                                {{ form_row(form.enabled) }}
+                                {{ form_row(form.sectionTitle) }}
+                                {{ form_row(form.fallbackStrategy) }}
+                            </div>
+                        </div>
+                    </div>
 
-        <button class="ui primary button" type="submit">
-            <i class="save icon"></i>
-            {{ 'sylius.ui.save'|trans }}
-        </button>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">{{ 'upsell.ui.display'|trans }}</h3>
+                            </div>
+                            <div class="card-body">
+                                {{ form_row(form.maxProductsShown) }}
+                                {{ form_row(form.minCoPurchaseThreshold) }}
+                                {{ form_row(form.showDiscountBadge) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
 
-        {{ form_end(form) }}
+        {% include '@SyliusAdmin/shared/crud/common/content/footer.html.twig' %}
     </div>
 {% endblock %}
