@@ -1,0 +1,172 @@
+{% extends '@SyliusAdmin/shared/layout/base.html.twig' %}
+
+{% block title %}{{ 'upsell.ui.upsell_analytics'|trans }} | {{ parent() }}{% endblock %}
+
+{% block body %}
+    {% include '@SyliusAdmin/shared/crud/common/sidebar.html.twig' %}
+
+    <div class="page-wrapper">
+        {% include '@SyliusAdmin/shared/crud/common/navbar.html.twig' %}
+
+        <div class="page-header" data-sticky-header>
+            <div class="container-xl">
+                <ol class="breadcrumb" aria-label="breadcrumbs">
+                    <li class="breadcrumb-item"><a href="{{ path('sylius_admin_dashboard') }}">{{ 'sylius.ui.dashboard'|trans }}</a></li>
+                    <li class="breadcrumb-item active">{{ 'upsell.ui.upsell_analytics'|trans }}</li>
+                </ol>
+                <div class="row mt-3 row-gap-2">
+                    <div class="col-12 col-md">
+                        <h1 class="page-title">{{ 'upsell.ui.upsell_analytics'|trans }}</h1>
+                    </div>
+                    <div class="col-12 col-md-auto ms-auto d-print-none">
+                        <form method="get" class="d-flex gap-2 align-items-center">
+                            <input type="date" name="from" value="{{ dateFrom }}" class="form-control form-control-sm" />
+                            <span class="text-muted">{{ 'upsell.ui.to'|trans }}</span>
+                            <input type="date" name="to" value="{{ dateTo }}" class="form-control form-control-sm" />
+                            <button type="submit" class="btn btn-sm btn-primary">{{ 'upsell.ui.filter'|trans }}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-body">
+            <div class="container-xl">
+                {# Summary cards #}
+                <div class="row row-deck row-cards mb-4">
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="subheader">{{ 'upsell.ui.total_impressions'|trans }}</div>
+                                </div>
+                                <div class="h1 mb-0 mt-2">{{ summary.impressions }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="subheader">{{ 'upsell.ui.total_accepted'|trans }}</div>
+                                </div>
+                                <div class="h1 mb-0 mt-2">{{ summary.accepted }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="subheader">{{ 'upsell.ui.acceptance_rate'|trans }}</div>
+                                </div>
+                                <div class="h1 mb-0 mt-2">{{ summary.rate }}%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="subheader">{{ 'upsell.ui.extra_revenue'|trans }}</div>
+                                </div>
+                                <div class="h1 mb-0 mt-2">${{ '%.2f'|format(summary.revenue / 100) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Daily revenue chart #}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ 'upsell.ui.daily_revenue'|trans }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="upsell-revenue-chart" height="80"></canvas>
+                    </div>
+                </div>
+
+                {# Breakdown by offer #}
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ 'upsell.ui.breakdown_by_offer'|trans }}</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-vcenter card-table">
+                            <thead>
+                                <tr>
+                                    <th>{{ 'upsell.ui.offer_name'|trans }}</th>
+                                    <th>{{ 'upsell.ui.type_label'|trans }}</th>
+                                    <th>{{ 'upsell.ui.impressions_col'|trans }}</th>
+                                    <th>{{ 'upsell.ui.accepted_col'|trans }}</th>
+                                    <th>{{ 'upsell.ui.rate_col'|trans }}</th>
+                                    <th>{{ 'upsell.ui.revenue_col'|trans }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in breakdown %}
+                                    <tr>
+                                        <td>{{ row.offer_name }}</td>
+                                        <td>
+                                            {% if row.type == 'fbt' %}
+                                                <span class="badge bg-blue-lt">FBT</span>
+                                            {% else %}
+                                                <span class="badge bg-green-lt">Post-purchase</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ row.impressions }}</td>
+                                        <td>{{ row.accepted }}</td>
+                                        <td>{{ row.impressions > 0 ? '%.1f'|format(row.accepted / row.impressions * 100) : '0' }}%</td>
+                                        <td>${{ '%.2f'|format(row.revenue / 100) }}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">{{ 'upsell.ui.no_data'|trans }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include '@SyliusAdmin/shared/crud/common/content/footer.html.twig' %}
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script>
+        var ctx = document.getElementById('upsell-revenue-chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ dailyRevenue|map(r => r.date)|json_encode|raw }},
+                datasets: [{
+                    label: '{{ 'upsell.ui.revenue_col'|trans }}',
+                    data: {{ dailyRevenue|map(r => r.revenue / 100)|json_encode|raw }},
+                    backgroundColor: 'rgba(32, 107, 196, 0.6)',
+                    borderColor: 'rgba(32, 107, 196, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: function(v) { return '$' + v.toFixed(2); } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) { return '$' + ctx.parsed.y.toFixed(2); }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

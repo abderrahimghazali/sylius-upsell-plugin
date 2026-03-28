@@ -9,6 +9,7 @@
 {% if orderId > 0 %}
     {% set offerUrl = path('abderrahim_sylius_upsell_shop_offer', {'orderId': orderId}) %}
     {% set acceptUrlBase = path('abderrahim_sylius_upsell_shop_accept', {'offerId': 0}) %}
+    {% set impressionUrl = path('abderrahim_sylius_upsell_shop_impression') %}
 {% endif %}
 
 <div id="upsell-modal" class="upsell-hidden"></div>
@@ -74,6 +75,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     var OFFER_URL = '{{ offerUrl|default('')|e('js') }}';
     var ACCEPT_URL_BASE = '{{ acceptUrlBase|default('')|e('js') }}';
+    var IMPRESSION_URL = '{{ impressionUrl|default('')|e('js') }}';
 
     if (!OFFER_URL) return;
 
@@ -131,6 +133,22 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('upsell-decline').addEventListener('click', declineOffer);
     }
 
+    function trackImpression(action, revenue) {
+        if (!IMPRESSION_URL || !offer) return;
+        fetch(IMPRESSION_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'post_purchase',
+                productCode: offer.product.variantCode,
+                impressionId: offer.impressionId,
+                offerId: offer.offerId,
+                action: action,
+                revenue: revenue || 0
+            })
+        }).catch(function() {});
+    }
+
     function acceptOffer() {
         var btn = document.getElementById('upsell-accept');
         btn.disabled = true;
@@ -141,7 +159,9 @@ document.addEventListener('DOMContentLoaded', function() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
         })
-        .then(function() {
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            trackImpression('accepted', data.revenue || offer.product.discountedPrice);
             modal.classList.add('upsell-hidden');
             var locale = window.location.pathname.split('/')[1] || 'en_US';
             window.location.href = '/' + locale + '/cart/';
@@ -150,6 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function declineOffer() {
+        trackImpression('declined', 0);
         modal.classList.add('upsell-hidden');
         form.submit();
     }

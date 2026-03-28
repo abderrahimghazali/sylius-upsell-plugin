@@ -6,10 +6,13 @@ export default class extends Controller {
     static values = {
         addToCartUrl: String,
         token: String,
+        impressionUrl: String,
+        productCodes: String,
     };
 
     connect() {
         this.updateButton();
+        this.trackImpression('shown');
     }
 
     toggle() {
@@ -62,6 +65,7 @@ export default class extends Controller {
             const allOk = responses.every((r) => r.ok);
 
             if (allOk) {
+                this.trackImpression('accepted');
                 this.showConfirmation();
             } else {
                 console.error(
@@ -85,5 +89,19 @@ export default class extends Controller {
             this.confirmationTarget.classList.remove('visible');
             this.confirmationTarget.classList.add('hidden');
         }, 3000);
+    }
+
+    trackImpression(action) {
+        if (!this.impressionUrlValue) return;
+
+        fetch(this.impressionUrlValue, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'fbt',
+                productCode: this.productCodesValue || '',
+                action: action,
+            }),
+        }).catch(() => {});
     }
 }

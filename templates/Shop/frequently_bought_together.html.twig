@@ -5,7 +5,9 @@
     <div class="ui segment"
          data-controller="abderrahimghazali--sylius-upsell-plugin--fbt"
          data-abderrahimghazali--sylius-upsell-plugin--fbt-add-to-cart-url-value="{{ path('sylius_shop_api_cart_add_item', {'tokenValue': sylius.cart.tokenValue|default('')}) }}"
-         data-abderrahimghazali--sylius-upsell-plugin--fbt-token-value="{{ sylius.cart.tokenValue|default('') }}">
+         data-abderrahimghazali--sylius-upsell-plugin--fbt-token-value="{{ sylius.cart.tokenValue|default('') }}"
+         data-abderrahimghazali--sylius-upsell-plugin--fbt-impression-url-value="{{ path('abderrahim_sylius_upsell_shop_impression') }}"
+         data-abderrahimghazali--sylius-upsell-plugin--fbt-product-codes-value="{{ fbtProducts|map(p => p.product.code|default(''))|join(',') }}">
 
         <h3 class="ui header">
             {{ config.sectionTitle|trans }}

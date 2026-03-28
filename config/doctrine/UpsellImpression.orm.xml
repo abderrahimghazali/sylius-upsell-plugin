@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Abderrahim\SyliusUpsellPlugin\Entity\UpsellImpression"
+            table="upsell_impression">
+
+        <id name="id" column="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="type" column="type" type="string" length="20" nullable="false"/>
+
+        <field name="orderToken" column="order_token" type="string" length="255" nullable="true"/>
+
+        <field name="productCode" column="product_code" type="string" length="255" nullable="false"/>
+
+        <field name="action" column="action" type="string" length="20" nullable="false"/>
+
+        <field name="revenue" column="revenue" type="integer" nullable="false">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
+
+        <field name="channel" column="channel" type="string" length="50" nullable="false"/>
+
+        <field name="createdAt" column="created_at" type="datetime" nullable="false"/>
+
+        <many-to-one field="upsellOffer"
+                     target-entity="Abderrahim\SyliusUpsellPlugin\Entity\UpsellOffer">
+            <join-column name="upsell_offer_id" referenced-column-name="id" nullable="true" on-delete="SET NULL"/>
+        </many-to-one>
+
+    </entity>
+
+</doctrine-mapping>

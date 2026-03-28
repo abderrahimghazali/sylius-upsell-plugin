@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-03-28
+
+### Added
+
+#### Analytics Dashboard
+- `UpsellImpression` entity tracking every upsell shown/accepted/declined with revenue
+- `UpsellAnalyticsService` for recording impressions and querying analytics
+- Admin dashboard: Marketing > Upsell Analytics with summary cards, daily revenue chart (Chart.js), and breakdown by offer table
+- Date range filter for analytics
+- Automatic impression tracking wired into FBT and checkout upsell flows
+
 ## [2.0.0] - 2026-03-28
 
 ### Added
@@ -25,7 +36,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "Yes, add it!" adds product to current cart at discounted price, redirects to cart for review
 - "No thanks" submits the order normally
 - Admin CRUD: Marketing > Upsell Offers with grid and full create/update forms
-- Stimulus `post-purchase-controller` for modal rendering, accept/decline handling
 - Unit tests for `FrequentlyBoughtTogetherResolver` and `PostPurchaseOfferResolver`
 
 #### Infrastructure

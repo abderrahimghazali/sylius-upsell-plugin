@@ -19,6 +19,14 @@ final class AdminMenuListener
 
         if (null !== $marketingMenu) {
             $marketingMenu
+                ->addChild('upsell_analytics', [
+                    'route' => 'upsell_admin_analytics',
+                ])
+                ->setLabel('upsell.ui.upsell_analytics')
+                ->setLabelAttribute('icon', 'chart bar')
+            ;
+
+            $marketingMenu
                 ->addChild('upsell_offers', [
                     'route' => 'upsell_admin_offer_index',
                     'extras' => ['routes' => [

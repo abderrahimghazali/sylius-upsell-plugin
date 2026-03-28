@@ -3,7 +3,7 @@
     "type": "sylius-plugin",
     "description": "Post-purchase upsell and cross-sell plugin for Sylius 2.x — Frequently Bought Together, one-click add-all-to-cart",
     "license": "MIT",
-    "keywords": ["sylius", "sylius-plugin", "upsell", "cross-sell", "frequently-bought-together", "ecommerce"],
+    "keywords": ["sylius", "sylius-plugin", "upsell", "cross-sell", "frequently-bought-together", "post-purchase", "analytics", "ecommerce"],
     "homepage": "https://github.com/abderrahimghazali/sylius-upsell-plugin",
     "authors": [
         {

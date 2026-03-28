@@ -50,6 +50,8 @@
 - **Priority system** — control which offer wins when multiple match
 - **Admin CRUD** for upsell offers under Marketing, and global FBT settings under Configuration
 - **Drag-and-drop reordering** of manual FBT relations with optional discount badges
+- **Analytics dashboard** — impressions, acceptance rate, extra revenue, daily chart (Chart.js)
+- **Impression tracking** — automatic for both FBT and checkout upsell (shown / accepted / declined)
 
 ## Requirements
 
@@ -166,12 +168,14 @@ src/
 │   │   ├── UpsellConfigurationController.php    # Global FBT settings
 │   │   └── UpsellOfferController.php            # CRUD for upsell offers
 │   └── Shop/
+│       ├── ImpressionController.php             # Impression tracking API
 │       └── PostPurchaseController.php           # Accept/decline offer API
 ├── DependencyInjection/
 │   ├── Configuration.php
 │   └── SyliusUpsellExtension.php                # Prepends resources, grids, hooks
 ├── Entity/
 │   ├── UpsellConfiguration.php
+│   ├── UpsellImpression.php
 │   ├── UpsellOffer.php
 │   ├── UpsellOfferInterface.php
 │   ├── UpsellRelation.php
@@ -185,11 +189,13 @@ src/
 │   ├── UpsellOfferType.php                      # Upsell offer form
 │   └── UpsellRelationType.php                   # Single relation row form
 ├── Repository/
+│   ├── UpsellImpressionRepository.php           # Analytics queries
 │   ├── UpsellOfferRepository.php                # Active offers query
 │   └── UpsellRelationRepository.php             # Relations by product
 ├── Service/
 │   ├── FrequentlyBoughtTogetherResolver.php     # FBT logic (manual + algorithmic)
 │   ├── PostPurchaseOfferResolver.php            # Best matching offer for an order
+│   ├── UpsellAnalyticsService.php               # Impression recording + analytics
 │   └── UpsellConfigurationProvider.php          # Cached config access
 ├── Twig/UpsellExtension.php                     # Twig function bridge
 └── SyliusUpsellPlugin.php                       # Bundle class
@@ -202,6 +208,7 @@ assets/
 
 templates/
 ├── Admin/
+│   ├── analytics.html.twig                      # Analytics dashboard with Chart.js
 │   ├── configuration.html.twig                  # Global settings page
 │   └── upsell_offer/
 │       ├── create.html.twig

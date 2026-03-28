@@ -1,3 +1,9 @@
+abderrahim_sylius_upsell_shop_impression:
+    path: /upsell/impression
+    defaults:
+        _controller: Abderrahim\SyliusUpsellPlugin\Controller\Shop\ImpressionController::recordAction
+    methods: [POST]
+
 abderrahim_sylius_upsell_shop_offer:
     path: /upsell/offer/{orderId}
     defaults:

@@ -19,6 +19,22 @@ upsell:
         offer_product: 'Produit proposé'
         discount: 'Réduction %'
         all_products: 'Tous les produits (global)'
+        upsell_analytics: 'Analytiques upsell'
+        total_impressions: 'Total impressions'
+        total_accepted: 'Total acceptées'
+        acceptance_rate: "Taux d'acceptation"
+        extra_revenue: 'Revenu supplémentaire'
+        daily_revenue: 'Revenu upsell quotidien'
+        breakdown_by_offer: 'Détail par offre'
+        offer_name: 'Offre'
+        type_label: 'Type'
+        impressions_col: 'Impressions'
+        accepted_col: 'Acceptées'
+        rate_col: 'Taux'
+        revenue_col: 'Revenu'
+        no_data: 'Aucune donnée pour la période sélectionnée.'
+        to: 'au'
+        filter: 'Filtrer'
     form:
         enabled: 'Activer Fréquemment achetés ensemble'
         min_co_purchase_threshold: "Seuil minimum d'achats conjoints"

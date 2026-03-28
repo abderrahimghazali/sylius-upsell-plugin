@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Abderrahim\SyliusUpsellPlugin\Controller\Shop;
 
+use Abderrahim\SyliusUpsellPlugin\Entity\UpsellImpression;
 use Abderrahim\SyliusUpsellPlugin\Entity\UpsellOffer;
 use Abderrahim\SyliusUpsellPlugin\Repository\UpsellOfferRepository;
 use Abderrahim\SyliusUpsellPlugin\Service\PostPurchaseOfferResolver;
+use Abderrahim\SyliusUpsellPlugin\Service\UpsellAnalyticsService;
 use Doctrine\ORM\EntityManagerInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
@@ -33,6 +35,7 @@ final class PostPurchaseController extends AbstractController
         private readonly OrderItemQuantityModifierInterface $orderItemQuantityModifier,
         private readonly FactoryInterface $orderItemFactory,
         private readonly EntityManagerInterface $entityManager,
+        private readonly UpsellAnalyticsService $analyticsService,
     ) {
     }
 
@@ -65,8 +68,18 @@ final class PostPurchaseController extends AbstractController
         $product = $offer->getOfferProduct();
         $image = $product?->getImagesByType('main')->first();
 
+        // Record impression
+        $impression = $this->analyticsService->recordImpression(
+            UpsellImpression::TYPE_POST_PURCHASE,
+            $order->getTokenValue(),
+            $product?->getCode() ?? '',
+            $channel->getCode() ?? '',
+            $offer,
+        );
+
         return new JsonResponse([
             'offerId' => $offer->getId(),
+            'impressionId' => $impression->getId(),
             'headline' => $offer->getHeadline(),
             'body' => $offer->getBody(),
             'ctaLabel' => $offer->getCtaLabel(),
@@ -86,7 +99,7 @@ final class PostPurchaseController extends AbstractController
 
     public function acceptAction(int $offerId): JsonResponse
     {
-        /** @var \Abderrahim\SyliusUpsellPlugin\Entity\UpsellOffer|null $offer */
+        /** @var UpsellOffer|null $offer */
         $offer = $this->offerRepository->find($offerId);
 
         if (null === $offer || !$offer->isEnabled()) {
@@ -108,7 +121,7 @@ final class PostPurchaseController extends AbstractController
         $orderItem = $this->orderItemFactory->createNew();
         $orderItem->setVariant($variant);
 
-        // Apply upsell discount
+        $discountedPrice = 0;
         if ($offer->getDiscountPercent() > 0) {
             $originalPrice = $variant->getChannelPricingForChannel($channel)?->getPrice() ?? 0;
             $discountedPrice = (int) round($originalPrice * (100 - $offer->getDiscountPercent()) / 100);
@@ -121,7 +134,7 @@ final class PostPurchaseController extends AbstractController
 
         $this->entityManager->flush();
 
-        return new JsonResponse(['success' => true]);
+        return new JsonResponse(['success' => true, 'revenue' => $discountedPrice]);
     }
 
     private function resolveVariant(UpsellOffer $offer): ?ProductVariantInterface

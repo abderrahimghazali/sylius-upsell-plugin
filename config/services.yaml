@@ -53,6 +53,17 @@ services:
             $orderItemQuantityModifier: '@sylius.modifier.order_item_quantity'
             $orderItemFactory: '@sylius.factory.order_item'
 
+    # Phase 3 — Analytics
+    Abderrahim\SyliusUpsellPlugin\Repository\UpsellImpressionRepository: ~
+
+    Abderrahim\SyliusUpsellPlugin\Service\UpsellAnalyticsService: ~
+
+    Abderrahim\SyliusUpsellPlugin\Controller\Shop\ImpressionController:
+        public: true
+
+    Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellAnalyticsController:
+        public: true
+
     Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellOfferController:
         public: true
         arguments:

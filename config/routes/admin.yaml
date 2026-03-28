@@ -1,3 +1,9 @@
+upsell_admin_analytics:
+    path: /upsell/analytics
+    defaults:
+        _controller: Abderrahim\SyliusUpsellPlugin\Controller\Admin\UpsellAnalyticsController::indexAction
+    methods: [GET]
+
 abderrahim_sylius_upsell_admin_configuration:
     path: /upsell/configuration
     defaults:
