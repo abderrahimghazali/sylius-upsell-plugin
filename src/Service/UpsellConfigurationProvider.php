@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Abderrahim\SyliusUpsellPlugin\Service;
 
 use Abderrahim\SyliusUpsellPlugin\Entity\UpsellConfiguration;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 
 class UpsellConfigurationProvider
 {
+    private ?UpsellConfiguration $cached = null;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -16,14 +19,26 @@ class UpsellConfigurationProvider
 
     public function getConfiguration(): UpsellConfiguration
     {
+        if (null !== $this->cached) {
+            return $this->cached;
+        }
+
         $repository = $this->entityManager->getRepository(UpsellConfiguration::class);
         $config = $repository->findOneBy([]);
 
         if (null === $config) {
             $config = new UpsellConfiguration();
             $this->entityManager->persist($config);
-            $this->entityManager->flush();
+
+            try {
+                $this->entityManager->flush();
+            } catch (UniqueConstraintViolationException) {
+                $this->entityManager->clear(UpsellConfiguration::class);
+                $config = $repository->findOneBy([]);
+            }
         }
+
+        $this->cached = $config;
 
         return $config;
     }

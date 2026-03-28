@@ -1,5 +1,6 @@
 upsell:
     flash:
+        configuration_saved: 'Upsell configuration has been saved.'
         offer_created: 'Upsell offer has been created.'
         offer_updated: 'Upsell offer has been updated.'
     offer:

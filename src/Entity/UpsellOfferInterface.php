@@ -10,9 +10,9 @@ use Sylius\Resource\Model\ResourceInterface;
 
 interface UpsellOfferInterface extends ResourceInterface
 {
-    public function getName(): ?string;
+    public function getName(): string;
 
-    public function setName(?string $name): void;
+    public function setName(string $name): void;
 
     public function isEnabled(): bool;
 

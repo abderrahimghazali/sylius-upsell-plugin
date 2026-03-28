@@ -86,6 +86,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (!form) return;
 
+    function esc(s) {
+        var d = document.createElement('div');
+        d.textContent = s || '';
+        return d.innerHTML;
+    }
+
     function formatPrice(cents, currency) {
         try {
             return new Intl.NumberFormat(document.documentElement.lang || 'en', {
@@ -98,8 +104,9 @@ document.addEventListener('DOMContentLoaded', function() {
         offer = data;
         var orig = formatPrice(data.product.originalPrice, data.product.currency);
         var disc = formatPrice(data.product.discountedPrice, data.product.currency);
-        var img = data.product.image
-            ? '<img src="/media/image/' + data.product.image + '" style="width:120px;border-radius:8px" />'
+        var imgUrl = data.product.imageUrl || '';
+        var img = imgUrl
+            ? '<img src="' + esc(imgUrl) + '" style="width:120px;border-radius:8px" />'
             : '';
         var badge = data.discountPercent > 0
             ? '<span class="upsell-modal__badge">-' + data.discountPercent + '%</span>'
@@ -108,12 +115,12 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.innerHTML =
             '<div class="upsell-modal__overlay">' +
                 '<div class="upsell-modal__dialog">' +
-                    '<h3 class="upsell-modal__headline">' + data.headline + '</h3>' +
-                    (data.body ? '<p class="upsell-modal__body">' + data.body + '</p>' : '') +
+                    '<h3 class="upsell-modal__headline">' + esc(data.headline) + '</h3>' +
+                    (data.body ? '<p class="upsell-modal__body">' + esc(data.body) + '</p>' : '') +
                     '<div class="upsell-modal__product">' +
                         '<div class="upsell-modal__product-image">' + img + badge + '</div>' +
                         '<div class="upsell-modal__product-info">' +
-                            '<h4 class="upsell-modal__product-name">' + data.product.name + '</h4>' +
+                            '<h4 class="upsell-modal__product-name">' + esc(data.product.name) + '</h4>' +
                             '<div class="upsell-modal__pricing">' +
                                 (data.discountPercent > 0 ? '<span class="upsell-modal__price--original">' + orig + '</span>' : '') +
                                 '<span class="upsell-modal__price--current">' + disc + '</span>' +
@@ -121,8 +128,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         '</div>' +
                     '</div>' +
                     '<div class="upsell-modal__actions">' +
-                        '<button type="button" class="upsell-modal__cta" id="upsell-accept">' + data.ctaLabel + '</button>' +
-                        '<button type="button" class="upsell-modal__decline" id="upsell-decline">' + data.declineLabel + '</button>' +
+                        '<button type="button" class="upsell-modal__cta" id="upsell-accept">' + esc(data.ctaLabel) + '</button>' +
+                        '<button type="button" class="upsell-modal__decline" id="upsell-decline">' + esc(data.declineLabel) + '</button>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -157,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var url = ACCEPT_URL_BASE.replace('/0', '/' + offer.offerId);
         fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-Token': offer.csrfToken || '' }
         })
         .then(function(r) { return r.json(); })
         .then(function(data) {

@@ -7,6 +7,12 @@
     <entity name="Abderrahim\SyliusUpsellPlugin\Entity\UpsellImpression"
             table="upsell_impression">
 
+        <indexes>
+            <index name="idx_impression_created_channel" columns="created_at,channel"/>
+            <index name="idx_impression_action" columns="action"/>
+            <index name="idx_impression_offer" columns="upsell_offer_id"/>
+        </indexes>
+
         <id name="id" column="id" type="integer">
             <generator strategy="AUTO"/>
         </id>

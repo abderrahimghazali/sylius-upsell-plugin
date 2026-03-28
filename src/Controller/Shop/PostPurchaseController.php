@@ -21,6 +21,7 @@ use Sylius\Component\Order\Modifier\OrderModifierInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 final class PostPurchaseController extends AbstractController
@@ -46,6 +47,12 @@ final class PostPurchaseController extends AbstractController
 
         if (null === $order) {
             return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        }
+
+        $customer = $order->getCustomer();
+        $user = $this->getUser();
+        if (null !== $customer && null !== $user && method_exists($user, 'getCustomer') && $customer !== $user->getCustomer()) {
+            return new JsonResponse(null, Response::HTTP_FORBIDDEN);
         }
 
         $offer = $this->offerResolver->resolve($order);
@@ -77,9 +84,14 @@ final class PostPurchaseController extends AbstractController
             $offer,
         );
 
+        /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrfTokenManager */
+        $csrfTokenManager = $this->container->get('security.csrf.token_manager');
+        $csrfToken = $csrfTokenManager->getToken('upsell_accept')->getValue();
+
         return new JsonResponse([
             'offerId' => $offer->getId(),
             'impressionId' => $impression->getId(),
+            'csrfToken' => $csrfToken,
             'headline' => $offer->getHeadline(),
             'body' => $offer->getBody(),
             'ctaLabel' => $offer->getCtaLabel(),
@@ -93,12 +105,18 @@ final class PostPurchaseController extends AbstractController
                 'discountedPrice' => $discountedPrice,
                 'currency' => $channel->getBaseCurrency()?->getCode(),
                 'image' => $image ? $image->getPath() : null,
+                'imageUrl' => $image ? '/media/image/' . $image->getPath() : null,
             ],
         ]);
     }
 
-    public function acceptAction(int $offerId): JsonResponse
+    public function acceptAction(int $offerId, Request $request): JsonResponse
     {
+        $token = $request->headers->get('X-CSRF-Token', '');
+        if (!$this->isCsrfTokenValid('upsell_accept', $token)) {
+            return new JsonResponse(['error' => 'Invalid CSRF token'], Response::HTTP_FORBIDDEN);
+        }
+
         /** @var UpsellOffer|null $offer */
         $offer = $this->offerRepository->find($offerId);
 

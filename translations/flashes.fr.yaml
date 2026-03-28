@@ -1,5 +1,6 @@
 upsell:
     flash:
+        configuration_saved: 'La configuration upsell a été enregistrée.'
         offer_created: "L'offre upsell a été créée."
         offer_updated: "L'offre upsell a été mise à jour."
     offer:

@@ -21,6 +21,8 @@ final class UpsellConfigurationController extends AbstractController
 
     public function editAction(Request $request): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMINISTRATION_ACCESS');
+
         $configuration = $this->configurationProvider->getConfiguration();
 
         $form = $this->createForm(UpsellConfigurationType::class, $configuration);
@@ -29,7 +31,7 @@ final class UpsellConfigurationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->flush();
 
-            $this->addFlash('success', 'upsell.ui.configuration_saved');
+            $this->addFlash('success', 'upsell.flash.configuration_saved');
 
             return $this->redirectToRoute('abderrahim_sylius_upsell_admin_configuration');
         }

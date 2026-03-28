@@ -11,7 +11,7 @@ class UpsellOffer implements UpsellOfferInterface
 {
     protected ?int $id = null;
 
-    protected ?string $name = null;
+    protected string $name = '';
 
     protected bool $enabled = true;
 
@@ -42,12 +42,12 @@ class UpsellOffer implements UpsellOfferInterface
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName(?string $name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

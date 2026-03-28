@@ -11,6 +11,12 @@ export default class extends Controller {
     offer = null;
     placeOrderForm = null;
 
+    esc(str) {
+        const d = document.createElement('div');
+        d.textContent = str ?? '';
+        return d.innerHTML;
+    }
+
     connect() {
         this.placeOrderForm = document.querySelector(
             'form[name="sylius_checkout_complete"]',
@@ -57,8 +63,10 @@ export default class extends Controller {
             offer.product.currency,
         );
 
-        const imageHtml = offer.product.image
-            ? `<img src="/media/image/${offer.product.image}" alt="${offer.product.name}" style="width:120px;border-radius:8px" loading="lazy" />`
+        const e = (s) => this.esc(s);
+        const imageUrl = offer.product.imageUrl || '';
+        const imageHtml = imageUrl
+            ? `<img src="${e(imageUrl)}" alt="${e(offer.product.name)}" style="width:120px;border-radius:8px" loading="lazy" />`
             : '';
 
         const discountBadge =
@@ -69,15 +77,15 @@ export default class extends Controller {
         modal.innerHTML = `
             <div class="upsell-modal__overlay">
                 <div class="upsell-modal__dialog">
-                    <h3 class="upsell-modal__headline">${offer.headline}</h3>
-                    ${offer.body ? `<p class="upsell-modal__body">${offer.body}</p>` : ''}
+                    <h3 class="upsell-modal__headline">${e(offer.headline)}</h3>
+                    ${offer.body ? `<p class="upsell-modal__body">${e(offer.body)}</p>` : ''}
                     <div class="upsell-modal__product">
                         <div class="upsell-modal__product-image">
                             ${imageHtml}
                             ${discountBadge}
                         </div>
                         <div class="upsell-modal__product-info">
-                            <h4 class="upsell-modal__product-name">${offer.product.name}</h4>
+                            <h4 class="upsell-modal__product-name">${e(offer.product.name)}</h4>
                             <div class="upsell-modal__pricing">
                                 ${offer.discountPercent > 0 ? `<span class="upsell-modal__price--original">${originalPrice}</span>` : ''}
                                 <span class="upsell-modal__price--current">${discountedPrice}</span>
@@ -86,10 +94,10 @@ export default class extends Controller {
                     </div>
                     <div class="upsell-modal__actions">
                         <button type="button" class="upsell-modal__cta" data-action="click->abderrahimghazali--sylius-upsell-plugin--post-purchase#accept">
-                            ${offer.ctaLabel}
+                            ${e(offer.ctaLabel)}
                         </button>
                         <button type="button" class="upsell-modal__decline" data-action="click->abderrahimghazali--sylius-upsell-plugin--post-purchase#decline">
-                            ${offer.declineLabel}
+                            ${e(offer.declineLabel)}
                         </button>
                     </div>
                 </div>
@@ -114,6 +122,7 @@ export default class extends Controller {
                 headers: {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-Token': this.offer.csrfToken || '',
                 },
             });
 

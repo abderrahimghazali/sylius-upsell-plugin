@@ -20,10 +20,21 @@ final class UpsellAnalyticsController extends AbstractController
 
     public function indexAction(Request $request): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMINISTRATION_ACCESS');
+
         $channelCode = $this->channelContext->getChannel()->getCode() ?? '';
 
-        $from = new \DateTime($request->query->get('from', '-30 days'));
-        $to = new \DateTime($request->query->get('to', 'now'));
+        try {
+            $from = new \DateTime($request->query->getString('from', '-30 days'));
+        } catch (\Exception) {
+            $from = new \DateTime('-30 days');
+        }
+
+        try {
+            $to = new \DateTime($request->query->getString('to', 'now'));
+        } catch (\Exception) {
+            $to = new \DateTime('now');
+        }
 
         $summary = $this->analyticsService->getSummary($from, $to, $channelCode);
         $breakdown = $this->analyticsService->getBreakdownByOffer($from, $to, $channelCode);
