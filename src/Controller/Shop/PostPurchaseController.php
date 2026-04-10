@@ -10,6 +10,7 @@ use Abderrahim\SyliusUpsellPlugin\Repository\UpsellOfferRepository;
 use Abderrahim\SyliusUpsellPlugin\Service\PostPurchaseOfferResolver;
 use Abderrahim\SyliusUpsellPlugin\Service\UpsellAnalyticsService;
 use Doctrine\ORM\EntityManagerInterface;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -39,6 +40,7 @@ final class PostPurchaseController extends AbstractController
         private readonly UpsellAnalyticsService $analyticsService,
         private readonly CsrfTokenManagerInterface $csrfTokenManager,
         private readonly RequestStack $requestStack,
+        private readonly CacheManager $imagineCacheManager,
     ) {}
 
     public function offerAction(int $orderId): JsonResponse
@@ -88,6 +90,8 @@ final class PostPurchaseController extends AbstractController
             $offer,
         );
 
+        $this->entityManager->flush();
+
         // Store impression ID and offer ID in session for accept validation
         $session = $this->requestStack->getSession();
         $session->set('upsell_impression_id', $impression->getId());
@@ -112,7 +116,7 @@ final class PostPurchaseController extends AbstractController
                 'discountedPrice' => $discountedPrice,
                 'currency' => $channel->getBaseCurrency()?->getCode(),
                 'image' => $image ? $image->getPath() : null,
-                'imageUrl' => $image ? '/media/image/' . $image->getPath() : null,
+                'imageUrl' => $image ? $this->imagineCacheManager->getBrowserPath((string) $image->getPath(), 'sylius_shop_product_thumbnail') : null,
             ],
         ]);
     }
@@ -181,12 +185,37 @@ final class PostPurchaseController extends AbstractController
         // Record accepted impression server-side with actual revenue
         if ($impressionId > 0) {
             $this->analyticsService->recordAccepted($impressionId, $revenuePrice);
+            $this->entityManager->flush();
         }
 
         // Invalidate CSRF token after use
         $this->csrfTokenManager->removeToken('upsell_accept');
 
         return new JsonResponse(['success' => true, 'revenue' => $revenuePrice]);
+    }
+
+    public function declineAction(Request $request): JsonResponse
+    {
+        $token = $request->headers->get('X-CSRF-Token', '');
+        if (!$this->isCsrfTokenValid('upsell_accept', $token)) {
+            return new JsonResponse(['error' => 'Invalid CSRF token'], Response::HTTP_FORBIDDEN);
+        }
+
+        $session = $this->requestStack->getSession();
+        $impressionId = (int) $session->get('upsell_impression_id', 0);
+
+        // Clear session to prevent replay
+        $session->remove('upsell_offer_id');
+        $session->remove('upsell_impression_id');
+
+        if ($impressionId > 0) {
+            $this->analyticsService->recordDeclined($impressionId);
+            $this->entityManager->flush();
+        }
+
+        $this->csrfTokenManager->removeToken('upsell_accept');
+
+        return new JsonResponse(['success' => true]);
     }
 
     private function resolveVariant(UpsellOffer $offer): ?ProductVariantInterface

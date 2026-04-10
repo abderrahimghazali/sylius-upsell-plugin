@@ -8,6 +8,11 @@
                 "main": "controllers/fbt-controller.js",
                 "fetch": "eager",
                 "enabled": true
+            },
+            "post-purchase": {
+                "main": "controllers/post-purchase-controller.js",
+                "fetch": "eager",
+                "enabled": true
             }
         }
     },

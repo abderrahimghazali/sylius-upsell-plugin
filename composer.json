@@ -42,7 +42,8 @@
     "extra": {
         "branch-alias": {
             "dev-main": "2.1-dev"
-        }
+        },
+        "sylius-plugin-name": "Upsell Plugin"
     },
     "config": {
         "sort-packages": true

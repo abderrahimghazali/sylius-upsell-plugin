@@ -19,3 +19,9 @@ abderrahim_sylius_upsell_shop_accept:
     methods: [POST]
     requirements:
         offerId: \d+
+
+abderrahim_sylius_upsell_shop_decline:
+    path: /upsell/decline
+    defaults:
+        _controller: Abderrahim\SyliusUpsellPlugin\Controller\Shop\PostPurchaseController::declineAction
+    methods: [POST]

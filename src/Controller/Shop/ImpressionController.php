@@ -7,6 +7,7 @@ namespace Abderrahim\SyliusUpsellPlugin\Controller\Shop;
 use Abderrahim\SyliusUpsellPlugin\Entity\UpsellImpression;
 use Abderrahim\SyliusUpsellPlugin\Repository\UpsellOfferRepository;
 use Abderrahim\SyliusUpsellPlugin\Service\UpsellAnalyticsService;
+use Doctrine\ORM\EntityManagerInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,10 +23,17 @@ final class ImpressionController extends AbstractController
         private readonly UpsellAnalyticsService $analyticsService,
         private readonly UpsellOfferRepository $offerRepository,
         private readonly ChannelContextInterface $channelContext,
+        private readonly EntityManagerInterface $entityManager,
     ) {}
 
     public function recordAction(Request $request): JsonResponse
     {
+        // Validate CSRF token
+        $token = $request->headers->get('X-CSRF-Token', '');
+        if (!$this->isCsrfTokenValid('upsell_impression', $token)) {
+            return new JsonResponse(['error' => 'Invalid CSRF token'], Response::HTTP_FORBIDDEN);
+        }
+
         // Rate limit: max impressions per session
         $session = $request->getSession();
         $count = (int) $session->get('upsell_impression_count', 0);
@@ -63,6 +71,8 @@ final class ImpressionController extends AbstractController
             $channelCode,
             $offer,
         );
+
+        $this->entityManager->flush();
 
         // Increment session counter
         $session->set('upsell_impression_count', $count + 1);

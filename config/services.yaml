@@ -24,9 +24,10 @@ services:
     Abderrahim\SyliusUpsellPlugin\Twig\UpsellExtension:
         tags: ['twig.extension']
 
-    Abderrahim\SyliusUpsellPlugin\EventListener\AdminMenuListener:
-        tags:
-            - { name: kernel.event_listener, event: sylius.menu.admin.main, method: addAdminMenuItems }
+    Abderrahim\SyliusUpsellPlugin\Twig\UpsellRuntime:
+        tags: ['twig.runtime']
+
+    Abderrahim\SyliusUpsellPlugin\EventListener\AdminMenuListener: ~
 
     Abderrahim\SyliusUpsellPlugin\EventListener\ProductFormListener: ~
 

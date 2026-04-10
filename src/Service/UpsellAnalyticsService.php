@@ -32,7 +32,6 @@ class UpsellAnalyticsService
         $impression->setUpsellOffer($offer);
 
         $this->entityManager->persist($impression);
-        $this->entityManager->flush();
 
         return $impression;
     }
@@ -47,8 +46,6 @@ class UpsellAnalyticsService
 
         $impression->setAction(UpsellImpression::ACTION_ACCEPTED);
         $impression->setRevenue($revenue);
-
-        $this->entityManager->flush();
     }
 
     public function recordDeclined(int $impressionId): void
@@ -60,8 +57,6 @@ class UpsellAnalyticsService
         }
 
         $impression->setAction(UpsellImpression::ACTION_DECLINED);
-
-        $this->entityManager->flush();
     }
 
     /**

@@ -91,11 +91,24 @@ final class FrequentlyBoughtTogetherResolver
                 $config->getMaxProductsShown(),
             );
 
-            $results = [];
-            foreach ($coPurchased as $row) {
-                /** @var ProductInterface|null $relatedProduct */
-                $relatedProduct = $this->productRepository->find((int) $row['product_id']);
+            $productIds = array_map(fn (array $row) => (int) $row['product_id'], $coPurchased);
 
+            if ([] === $productIds) {
+                return [];
+            }
+
+            /** @var ProductInterface[] $products */
+            $products = $this->productRepository->findBy(['id' => $productIds]);
+
+            // Index by ID to preserve co-purchase ranking order
+            $indexed = [];
+            foreach ($products as $p) {
+                $indexed[$p->getId()] = $p;
+            }
+
+            $results = [];
+            foreach ($productIds as $id) {
+                $relatedProduct = $indexed[$id] ?? null;
                 if (null !== $relatedProduct && $relatedProduct->isEnabled()) {
                     $results[] = [
                         'product' => $relatedProduct,

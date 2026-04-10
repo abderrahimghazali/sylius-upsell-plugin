@@ -7,6 +7,7 @@ export default class extends Controller {
         addToCartUrl: String,
         token: String,
         impressionUrl: String,
+        impressionCsrf: String,
         productCodes: String,
     };
 
@@ -94,7 +95,7 @@ export default class extends Controller {
 
         fetch(this.impressionUrlValue, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': this.impressionCsrfValue || '' },
             body: JSON.stringify({
                 type: 'fbt',
                 productCode: this.productCodesValue || '',

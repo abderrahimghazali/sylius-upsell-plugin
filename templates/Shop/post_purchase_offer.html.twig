@@ -9,6 +9,7 @@
 {% if orderId > 0 %}
     {% set offerUrl = path('abderrahim_sylius_upsell_shop_offer', {'orderId': orderId}) %}
     {% set acceptUrlBase = path('abderrahim_sylius_upsell_shop_accept', {'offerId': 0}) %}
+    {% set declineUrl = path('abderrahim_sylius_upsell_shop_decline') %}
     {% set impressionUrl = path('abderrahim_sylius_upsell_shop_impression') %}
 {% endif %}
 
@@ -45,7 +46,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     var OFFER_URL = '{{ offerUrl|default('')|e('js') }}';
     var ACCEPT_URL_BASE = '{{ acceptUrlBase|default('')|e('js') }}';
+    var DECLINE_URL = '{{ declineUrl|default('')|e('js') }}';
     var IMPRESSION_URL = '{{ impressionUrl|default('')|e('js') }}';
+    var IMPRESSION_CSRF = '{{ csrf_token('upsell_impression')|e('js') }}';
 
     if (!OFFER_URL) return;
 
@@ -116,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!IMPRESSION_URL || !offer) return;
         fetch(IMPRESSION_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': IMPRESSION_CSRF },
             body: JSON.stringify({
                 type: 'post_purchase',
                 productCode: offer.product.variantCode,
@@ -150,7 +153,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function declineOffer() {
-        trackImpression('declined', 0);
+        if (DECLINE_URL && offer) {
+            fetch(DECLINE_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-Token': offer.csrfToken || '' }
+            }).catch(function() {});
+        }
         modal.classList.add('upsell-hidden');
         form.submit();
     }

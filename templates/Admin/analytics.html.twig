@@ -142,7 +142,7 @@
             data: {
                 labels: {{ dailyRevenue|map(r => r.date)|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP'))|raw }},
                 datasets: [{
-                    label: {{ 'upsell.ui.revenue_col'|trans|json_encode(constant('JSON_HEX_TAG'))|raw }},
+                    label: {{ 'upsell.ui.revenue_col'|trans|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP'))|raw }},
                     data: {{ dailyRevenue|map(r => r.revenue / 100)|json_encode(constant('JSON_HEX_TAG'))|raw }},
                     backgroundColor: 'rgba(32, 107, 196, 0.6)',
                     borderColor: 'rgba(32, 107, 196, 1)',
@@ -155,14 +155,14 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { callback: function(v) { return v.toLocaleString(undefined, {style:'currency',currency:'{{ currencyCode }}'}); } }
+                        ticks: { callback: function(v) { return v.toLocaleString(undefined, {style:'currency',currency:'{{ currencyCode|e('js') }}'}); } }
                     }
                 },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
-                            label: function(ctx) { return ctx.parsed.y.toLocaleString(undefined, {style:'currency',currency:'{{ currencyCode }}'}); }
+                            label: function(ctx) { return ctx.parsed.y.toLocaleString(undefined, {style:'currency',currency:'{{ currencyCode|e('js') }}'}); }
                         }
                     }
                 }
