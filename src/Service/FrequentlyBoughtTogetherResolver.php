@@ -91,7 +91,7 @@ final class FrequentlyBoughtTogetherResolver
                 $config->getMaxProductsShown(),
             );
 
-            $productIds = array_map(fn (array $row) => (int) $row['product_id'], $coPurchased);
+            $productIds = array_map(fn(array $row) => (int) $row['product_id'], $coPurchased);
 
             if ([] === $productIds) {
                 return [];

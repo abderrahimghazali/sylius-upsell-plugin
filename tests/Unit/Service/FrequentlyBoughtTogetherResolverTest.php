@@ -96,6 +96,7 @@ final class FrequentlyBoughtTogetherResolverTest extends TestCase
 
         $relatedProduct = $this->createMock(ProductInterface::class);
         $relatedProduct->method('isEnabled')->willReturn(true);
+        $relatedProduct->method('getId')->willReturn(42);
 
         $config = new UpsellConfiguration();
         $config->setEnabled(true);
@@ -131,9 +132,9 @@ final class FrequentlyBoughtTogetherResolverTest extends TestCase
             ]);
 
         $this->productRepository
-            ->method('find')
-            ->with(42)
-            ->willReturn($relatedProduct);
+            ->method('findBy')
+            ->with(['id' => [42]])
+            ->willReturn([$relatedProduct]);
 
         $result = $this->resolver->resolve($sourceProduct);
 

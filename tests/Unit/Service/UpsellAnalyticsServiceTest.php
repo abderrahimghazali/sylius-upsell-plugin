@@ -27,7 +27,7 @@ final class UpsellAnalyticsServiceTest extends TestCase
     public function testRecordImpressionPersistsAndFlushes(): void
     {
         $this->entityManager->expects(self::once())->method('persist')->with(self::isInstanceOf(UpsellImpression::class));
-        $this->entityManager->expects(self::once())->method('flush');
+        $this->entityManager->expects(self::never())->method('flush');
 
         $impression = $this->service->recordImpression('fbt', null, 'PRODUCT_CODE', 'WEB');
 
@@ -88,7 +88,7 @@ final class UpsellAnalyticsServiceTest extends TestCase
             ->with(1)
             ->willReturn($impression);
 
-        $this->entityManager->expects(self::once())->method('flush');
+        $this->entityManager->expects(self::never())->method('flush');
 
         $this->service->recordAccepted(1, 3500);
 
@@ -105,7 +105,7 @@ final class UpsellAnalyticsServiceTest extends TestCase
             ->with(2)
             ->willReturn($impression);
 
-        $this->entityManager->expects(self::once())->method('flush');
+        $this->entityManager->expects(self::never())->method('flush');
 
         $this->service->recordDeclined(2);
 
